@@ -23,8 +23,8 @@ const APIIntegrationsSection = ({ isOpen, onToggle }) => {
       status: 'disconnected',
       lastSync: null
     },
-    openai: {
-      name: 'OpenAI',
+    mistral: {
+      name: 'Mistral AI',
       description: 'AI-powered subject line generation and content optimization',
       icon: 'Brain',
       connected: true,
@@ -282,7 +282,7 @@ const APIIntegrationsSection = ({ isOpen, onToggle }) => {
                   <h4 className="text-md font-medium text-text-primary mb-2">Integration Help</h4>
                   <div className="space-y-2 text-sm text-text-secondary">
                     <p><strong>SendGrid/Amazon SES:</strong> Required for sending emails. At least one email service must be connected.</p>
-                    <p><strong>OpenAI/Hugging Face:</strong> Optional AI services for subject line generation and content optimization.</p>
+                    <p><strong>Mistral AI/Hugging Face:</strong> Optional AI services for subject line generation and content optimization.</p>
                     <p><strong>API Keys:</strong> All API keys are encrypted and stored securely. You can update or remove them at any time.</p>
                   </div>
                   <div className="mt-4">
@@ -317,7 +317,7 @@ const APIIntegrationsSection = ({ isOpen, onToggle }) => {
                     <Icon name="Brain" size={16} className="text-text-muted" />
                   </div>
                   <p className="text-2xl font-bold text-accent">156</p>
-                  <p className="text-sm text-text-secondary">Subject lines generated via OpenAI</p>
+                  <p className="text-sm text-text-secondary">Subject lines generated via Mistral AI</p>
                 </div>
               </div>
             </div>

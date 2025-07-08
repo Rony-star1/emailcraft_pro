@@ -6,6 +6,7 @@ import Input from '../../../components/ui/Input';
 const BillingSection = ({ isOpen, onToggle }) => {
   const [selectedCurrency, setSelectedCurrency] = useState('USD');
   const [isEditingPayment, setIsEditingPayment] = useState(false);
+  const [billingCycle, setBillingCycle] = useState('monthly');
   const [paymentData, setPaymentData] = useState({
     cardNumber: '**** **** **** 4242',
     expiryDate: '12/25',
@@ -23,25 +24,31 @@ const BillingSection = ({ isOpen, onToggle }) => {
 
   const plans = [
     {
+      id: 'starter',
       name: 'Starter',
-      price: { USD: 29, EUR: 25, GBP: 22 },
-      contacts: 500,
+      monthlyPrice: { USD: 25, EUR: 22, GBP: 20 },
+      yearlyPrice: { USD: 19, EUR: 17, GBP: 15 },
+      contacts: 1000,
       emails: 5000,
       features: ['Basic email editor', 'Contact management', 'Basic analytics', 'Email support'],
       current: true
     },
     {
+      id: 'professional',
       name: 'Professional',
-      price: { USD: 59, EUR: 52, GBP: 45 },
-      contacts: 2500,
+      monthlyPrice: { USD: 59, EUR: 52, GBP: 45 },
+      yearlyPrice: { USD: 49, EUR: 43, GBP: 37 },
+      contacts: 5000,
       emails: 25000,
       features: ['Advanced email editor', 'AI subject lines', 'Advanced analytics', 'A/B testing', 'Priority support'],
       current: false
     },
     {
+      id: 'enterprise',
       name: 'Enterprise',
-      price: { USD: 129, EUR: 115, GBP: 99 },
-      contacts: 10000,
+      monthlyPrice: { USD: 129, EUR: 115, GBP: 99 },
+      yearlyPrice: { USD: 99, EUR: 88, GBP: 76 },
+      contacts: 25000,
       emails: 100000,
       features: ['All Professional features', 'Custom integrations', 'Dedicated support', 'White-label options'],
       current: false
@@ -50,12 +57,16 @@ const BillingSection = ({ isOpen, onToggle }) => {
 
   const currentPlan = plans.find(plan => plan.current);
   const usageData = {
-    contacts: { used: 347, limit: currentPlan.contacts },
-    emails: { used: 2840, limit: currentPlan.emails }
+    contacts: { used: 347, limit: currentPlan?.contacts || 1000 },
+    emails: { used: 2840, limit: currentPlan?.emails || 5000 }
   };
 
   const handleCurrencyChange = (currency) => {
     setSelectedCurrency(currency);
+  };
+
+  const handleBillingCycleChange = (cycle) => {
+    setBillingCycle(cycle);
   };
 
   const handlePaymentEdit = () => {
@@ -67,8 +78,34 @@ const BillingSection = ({ isOpen, onToggle }) => {
     console.log('Payment method updated');
   };
 
-  const handleUpgrade = (planName) => {
-    console.log(`Upgrading to ${planName} plan`);
+  const handleUpgrade = async (planId) => {
+    try {
+      // Call API to create payment intent
+      const response = await fetch('/api/payments/create-intent', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify({
+          planId,
+          billingCycle,
+          currency: selectedCurrency
+        })
+      });
+
+      const data = await response.json();
+      
+      if (response.ok) {
+        // Handle successful payment intent creation
+        console.log('Payment intent created:', data);
+        // Redirect to payment page or show payment modal
+      } else {
+        console.error('Payment intent creation failed:', data.error);
+      }
+    } catch (error) {
+      console.error('Error creating payment intent:', error);
+    }
   };
 
   const getUsagePercentage = (used, limit) => {
@@ -79,6 +116,11 @@ const BillingSection = ({ isOpen, onToggle }) => {
     if (percentage >= 90) return 'text-error';
     if (percentage >= 75) return 'text-warning-600';
     return 'text-success';
+  };
+
+  const getCurrentPrice = (plan) => {
+    const priceObj = billingCycle === 'yearly' ? plan.yearlyPrice : plan.monthlyPrice;
+    return priceObj[selectedCurrency];
   };
 
   return (
@@ -127,17 +169,43 @@ const BillingSection = ({ isOpen, onToggle }) => {
               </div>
             </div>
 
+            {/* Billing Cycle Selection */}
+            <div>
+              <h4 className="text-md font-medium text-text-primary mb-4">Billing Cycle</h4>
+              <div className="flex space-x-2">
+                <button
+                  onClick={() => handleBillingCycleChange('monthly')}
+                  className={`px-4 py-2 rounded-md border transition-micro focus:outline-none focus:ring-2 focus:ring-primary ${
+                    billingCycle === 'monthly' ?'bg-primary text-primary-foreground border-primary' :'bg-surface text-text-secondary border-border hover:border-primary hover:text-text-primary'
+                  }`}
+                >
+                  Monthly
+                </button>
+                <button
+                  onClick={() => handleBillingCycleChange('yearly')}
+                  className={`px-4 py-2 rounded-md border transition-micro focus:outline-none focus:ring-2 focus:ring-primary ${
+                    billingCycle === 'yearly' ?'bg-primary text-primary-foreground border-primary' :'bg-surface text-text-secondary border-border hover:border-primary hover:text-text-primary'
+                  }`}
+                >
+                  Yearly
+                  <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-success-100 text-success">
+                    Save 20%
+                  </span>
+                </button>
+              </div>
+            </div>
+
             {/* Current Plan */}
             <div>
               <h4 className="text-md font-medium text-text-primary mb-4">Current Plan</h4>
               <div className="bg-primary-50 border border-primary-100 rounded-lg p-6">
                 <div className="flex items-center justify-between mb-4">
                   <div>
-                    <h5 className="text-lg font-semibold text-text-primary">{currentPlan.name}</h5>
+                    <h5 className="text-lg font-semibold text-text-primary">{currentPlan?.name}</h5>
                     <p className="text-2xl font-bold text-primary">
                       {currencies.find(c => c.code === selectedCurrency)?.symbol}
-                      {currentPlan.price[selectedCurrency]}
-                      <span className="text-sm font-normal text-text-secondary">/month</span>
+                      {getCurrentPrice(currentPlan)}
+                      <span className="text-sm font-normal text-text-secondary">/{billingCycle === 'yearly' ? 'year' : 'month'}</span>
                     </p>
                   </div>
                   <div className="bg-primary text-primary-foreground px-3 py-1 rounded-full text-sm font-medium">
@@ -193,7 +261,7 @@ const BillingSection = ({ isOpen, onToggle }) => {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {plans.map(plan => (
                   <div 
-                    key={plan.name}
+                    key={plan.id}
                     className={`border rounded-lg p-6 ${
                       plan.current 
                         ? 'border-primary bg-primary-50' :'border-border bg-surface hover:border-primary hover:shadow-elevation-2 transition-all'
@@ -203,9 +271,15 @@ const BillingSection = ({ isOpen, onToggle }) => {
                       <h5 className="text-lg font-semibold text-text-primary">{plan.name}</h5>
                       <p className="text-2xl font-bold text-primary">
                         {currencies.find(c => c.code === selectedCurrency)?.symbol}
-                        {plan.price[selectedCurrency]}
-                        <span className="text-sm font-normal text-text-secondary">/month</span>
+                        {getCurrentPrice(plan)}
+                        <span className="text-sm font-normal text-text-secondary">/{billingCycle === 'yearly' ? 'year' : 'month'}</span>
                       </p>
+                      {billingCycle === 'yearly' && (
+                        <p className="text-sm text-success mt-1">
+                          Save {currencies.find(c => c.code === selectedCurrency)?.symbol}
+                          {(plan.monthlyPrice[selectedCurrency] * 12) - plan.yearlyPrice[selectedCurrency]} annually
+                        </p>
+                      )}
                     </div>
                     <div className="space-y-2 mb-6">
                       <div className="flex justify-between text-sm">
@@ -233,7 +307,7 @@ const BillingSection = ({ isOpen, onToggle }) => {
                       <Button
                         variant="primary"
                         fullWidth
-                        onClick={() => handleUpgrade(plan.name)}
+                        onClick={() => handleUpgrade(plan.id)}
                       >
                         Upgrade to {plan.name}
                       </Button>
@@ -368,7 +442,7 @@ const BillingSection = ({ isOpen, onToggle }) => {
                         <td className="px-4 py-3 text-sm text-text-primary">Dec 1, 2024</td>
                         <td className="px-4 py-3 text-sm text-text-primary">Starter Plan - Monthly</td>
                         <td className="px-4 py-3 text-sm text-text-primary">
-                          {currencies.find(c => c.code === selectedCurrency)?.symbol}29.00
+                          {currencies.find(c => c.code === selectedCurrency)?.symbol}25.00
                         </td>
                         <td className="px-4 py-3">
                           <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-success-100 text-success">
@@ -385,7 +459,7 @@ const BillingSection = ({ isOpen, onToggle }) => {
                         <td className="px-4 py-3 text-sm text-text-primary">Nov 1, 2024</td>
                         <td className="px-4 py-3 text-sm text-text-primary">Starter Plan - Monthly</td>
                         <td className="px-4 py-3 text-sm text-text-primary">
-                          {currencies.find(c => c.code === selectedCurrency)?.symbol}29.00
+                          {currencies.find(c => c.code === selectedCurrency)?.symbol}25.00
                         </td>
                         <td className="px-4 py-3">
                           <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-success-100 text-success">

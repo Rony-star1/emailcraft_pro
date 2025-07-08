@@ -1,8 +1,20 @@
 import React, { useState, useCallback, useMemo } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
-import { debounce } from '../../../utils/resizeObserverFix';
 
 import Button from '../../../components/ui/Button';
+
+// Local debounce utility
+const debounce = (func, wait) => {
+  let timeout;
+  return function executedFunction(...args) {
+    const later = () => {
+      clearTimeout(timeout);
+      func(...args);
+    };
+    clearTimeout(timeout);
+    timeout = setTimeout(later, wait);
+  };
+};
 
 const PerformanceChart = () => {
   const [timeRange, setTimeRange] = useState('7d');

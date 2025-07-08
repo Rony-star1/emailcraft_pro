@@ -4,8 +4,6 @@ import BreadcrumbTrail from '../../components/ui/BreadcrumbTrail';
 import ProfileSection from './components/ProfileSection';
 import BillingSection from './components/BillingSection';
 import EmailPreferencesSection from './components/EmailPreferencesSection';
-import APIIntegrationsSection from './components/APIIntegrationsSection';
-import ComplianceSection from './components/ComplianceSection';
 import SecuritySection from './components/SecuritySection';
 import Icon from '../../components/AppIcon';
 
@@ -14,8 +12,6 @@ const AccountSettings = () => {
     profile: true,
     billing: false,
     emailPreferences: false,
-    apiIntegrations: false,
-    compliance: false,
     security: false
   });
 
@@ -67,18 +63,6 @@ const AccountSettings = () => {
       component: EmailPreferencesSection,
       title: 'Email Preferences',
       description: 'Configure default email settings and notifications'
-    },
-    {
-      key: 'apiIntegrations',
-      component: APIIntegrationsSection,
-      title: 'API Integrations',
-      description: 'Manage third-party service connections'
-    },
-    {
-      key: 'compliance',
-      component: ComplianceSection,
-      title: 'Compliance Settings',
-      description: 'Configure legal compliance and data protection'
     },
     {
       key: 'security',
@@ -142,7 +126,7 @@ const AccountSettings = () => {
                 </div>
                 <div>
                   <p className="text-sm text-text-secondary">Contacts</p>
-                  <p className="font-semibold text-text-primary">347/500</p>
+                  <p className="font-semibold text-text-primary">347/1000</p>
                 </div>
               </div>
             </div>
