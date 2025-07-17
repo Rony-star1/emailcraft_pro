@@ -8,72 +8,102 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        // Primary Colors
-        'primary': '#2563EB', // blue-600
-        'primary-50': '#EFF6FF', // blue-50
-        'primary-100': '#DBEAFE', // blue-100
-        'primary-500': '#3B82F6', // blue-500
-        'primary-600': '#2563EB', // blue-600
-        'primary-700': '#1D4ED8', // blue-700
-        'primary-foreground': '#FFFFFF', // white
+        'primary': 'rgb(var(--color-primary) / <alpha-value>)',
+        'primary-50': 'rgb(var(--color-primary-50) / <alpha-value>)',
+        'primary-100': 'rgb(var(--color-primary-100) / <alpha-value>)',
+        'primary-200': 'rgb(var(--color-primary-200) / <alpha-value>)',
+        'primary-300': 'rgb(var(--color-primary-300) / <alpha-value>)',
+        'primary-400': 'rgb(var(--color-primary-400) / <alpha-value>)',
+        'primary-500': 'rgb(var(--color-primary-500) / <alpha-value>)',
+        'primary-600': 'rgb(var(--color-primary-600) / <alpha-value>)',
+        'primary-700': 'rgb(var(--color-primary-700) / <alpha-value>)',
+        'primary-800': 'rgb(var(--color-primary-800) / <alpha-value>)',
+        'primary-900': 'rgb(var(--color-primary-900) / <alpha-value>)',
+        'primary-950': 'rgb(var(--color-primary-950) / <alpha-value>)',
+        'primary-foreground': 'rgb(var(--color-primary-foreground) / <alpha-value>)',
 
-        // Secondary Colors
-        'secondary': '#64748B', // slate-500
-        'secondary-50': '#F8FAFC', // slate-50
-        'secondary-100': '#F1F5F9', // slate-100
-        'secondary-200': '#E2E8F0', // slate-200
-        'secondary-300': '#CBD5E1', // slate-300
-        'secondary-400': '#94A3B8', // slate-400
-        'secondary-500': '#64748B', // slate-500
-        'secondary-600': '#475569', // slate-600
-        'secondary-700': '#334155', // slate-700
-        'secondary-foreground': '#FFFFFF', // white
+        'secondary': 'rgb(var(--color-secondary) / <alpha-value>)',
+        'secondary-50': 'rgb(var(--color-secondary-50) / <alpha-value>)',
+        'secondary-100': 'rgb(var(--color-secondary-100) / <alpha-value>)',
+        'secondary-200': 'rgb(var(--color-secondary-200) / <alpha-value>)',
+        'secondary-300': 'rgb(var(--color-secondary-300) / <alpha-value>)',
+        'secondary-400': 'rgb(var(--color-secondary-400) / <alpha-value>)',
+        'secondary-500': 'rgb(var(--color-secondary-500) / <alpha-value>)',
+        'secondary-600': 'rgb(var(--color-secondary-600) / <alpha-value>)',
+        'secondary-700': 'rgb(var(--color-secondary-700) / <alpha-value>)',
+        'secondary-800': 'rgb(var(--color-secondary-800) / <alpha-value>)',
+        'secondary-900': 'rgb(var(--color-secondary-900) / <alpha-value>)',
+        'secondary-950': 'rgb(var(--color-secondary-950) / <alpha-value>)',
+        'secondary-foreground': 'rgb(var(--color-secondary-foreground) / <alpha-value>)',
 
-        // Accent Colors
-        'accent': '#10B981', // emerald-500
-        'accent-50': '#ECFDF5', // emerald-50
-        'accent-100': '#D1FAE5', // emerald-100
-        'accent-500': '#10B981', // emerald-500
-        'accent-600': '#059669', // emerald-600
-        'accent-foreground': '#FFFFFF', // white
+        'accent': 'rgb(var(--color-accent) / <alpha-value>)',
+        'accent-50': 'rgb(var(--color-accent-50) / <alpha-value>)',
+        'accent-100': 'rgb(var(--color-accent-100) / <alpha-value>)',
+        'accent-200': 'rgb(var(--color-accent-200) / <alpha-value>)',
+        'accent-300': 'rgb(var(--color-accent-300) / <alpha-value>)',
+        'accent-400': 'rgb(var(--color-accent-400) / <alpha-value>)',
+        'accent-500': 'rgb(var(--color-accent-500) / <alpha-value>)',
+        'accent-600': 'rgb(var(--color-accent-600) / <alpha-value>)',
+        'accent-700': 'rgb(var(--color-accent-700) / <alpha-value>)',
+        'accent-800': 'rgb(var(--color-accent-800) / <alpha-value>)',
+        'accent-900': 'rgb(var(--color-accent-900) / <alpha-value>)',
+        'accent-950': 'rgb(var(--color-accent-950) / <alpha-value>)',
+        'accent-foreground': 'rgb(var(--color-accent-foreground) / <alpha-value>)',
 
-        // Background Colors
-        'background': '#FAFBFC', // custom off-white
-        'surface': '#FFFFFF', // white
-        'card': '#FFFFFF', // white
-        'popover': '#FFFFFF', // white
+        'success': 'rgb(var(--color-success) / <alpha-value>)',
+        'success-50': 'rgb(var(--color-success-50) / <alpha-value>)',
+        'success-100': 'rgb(var(--color-success-100) / <alpha-value>)',
+        'success-200': 'rgb(var(--color-success-200) / <alpha-value>)',
+        'success-300': 'rgb(var(--color-success-300) / <alpha-value>)',
+        'success-400': 'rgb(var(--color-success-400) / <alpha-value>)',
+        'success-500': 'rgb(var(--color-success-500) / <alpha-value>)',
+        'success-600': 'rgb(var(--color-success-600) / <alpha-value>)',
+        'success-700': 'rgb(var(--color-success-700) / <alpha-value>)',
+        'success-800': 'rgb(var(--color-success-800) / <alpha-value>)',
+        'success-900': 'rgb(var(--color-success-900) / <alpha-value>)',
+        'success-950': 'rgb(var(--color-success-950) / <alpha-value>)',
+        'success-foreground': 'rgb(var(--color-success-foreground) / <alpha-value>)',
 
-        // Text Colors
-        'text-primary': '#1E293B', // slate-800
-        'text-secondary': '#64748B', // slate-500
-        'text-muted': '#94A3B8', // slate-400
-        'text-foreground': '#1E293B', // slate-800
+        'warning': 'rgb(var(--color-warning) / <alpha-value>)',
+        'warning-50': 'rgb(var(--color-warning-50) / <alpha-value>)',
+        'warning-100': 'rgb(var(--color-warning-100) / <alpha-value>)',
+        'warning-200': 'rgb(var(--color-warning-200) / <alpha-value>)',
+        'warning-300': 'rgb(var(--color-warning-300) / <alpha-value>)',
+        'warning-400': 'rgb(var(--color-warning-400) / <alpha-value>)',
+        'warning-500': 'rgb(var(--color-warning-500) / <alpha-value>)',
+        'warning-600': 'rgb(var(--color-warning-600) / <alpha-value>)',
+        'warning-700': 'rgb(var(--color-warning-700) / <alpha-value>)',
+        'warning-800': 'rgb(var(--color-warning-800) / <alpha-value>)',
+        'warning-900': 'rgb(var(--color-warning-900) / <alpha-value>)',
+        'warning-950': 'rgb(var(--color-warning-950) / <alpha-value>)',
+        'warning-foreground': 'rgb(var(--color-warning-foreground) / <alpha-value>)',
 
-        // Status Colors
-        'success': '#059669', // emerald-600
-        'success-50': '#ECFDF5', // emerald-50
-        'success-100': '#D1FAE5', // emerald-100
-        'success-500': '#10B981', // emerald-500
-        'success-600': '#059669', // emerald-600
-        'success-foreground': '#FFFFFF', // white
+        'error': 'rgb(var(--color-error) / <alpha-value>)',
+        'error-50': 'rgb(var(--color-error-50) / <alpha-value>)',
+        'error-100': 'rgb(var(--color-error-100) / <alpha-value>)',
+        'error-200': 'rgb(var(--color-error-200) / <alpha-value>)',
+        'error-300': 'rgb(var(--color-error-300) / <alpha-value>)',
+        'error-400': 'rgb(var(--color-error-400) / <alpha-value>)',
+        'error-500': 'rgb(var(--color-error-500) / <alpha-value>)',
+        'error-600': 'rgb(var(--color-error-600) / <alpha-value>)',
+        'error-700': 'rgb(var(--color-error-700) / <alpha-value>)',
+        'error-800': 'rgb(var(--color-error-800) / <alpha-value>)',
+        'error-900': 'rgb(var(--color-error-900) / <alpha-value>)',
+        'error-950': 'rgb(var(--color-error-950) / <alpha-value>)',
+        'error-foreground': 'rgb(var(--color-error-foreground) / <alpha-value>)',
 
-        'warning': '#D97706', // amber-600
-        'warning-50': '#FFFBEB', // amber-50
-        'warning-100': '#FEF3C7', // amber-100
-        'warning-500': '#F59E0B', // amber-500
-        'warning-600': '#D97706', // amber-600
-        'warning-foreground': '#FFFFFF', // white
+        'background': 'rgb(var(--color-background) / <alpha-value>)',
+        'foreground': 'rgb(var(--color-foreground) / <alpha-value>)',
+        'surface': 'rgb(var(--color-surface) / <alpha-value>)',
+        'surface-foreground': 'rgb(var(--color-surface-foreground) / <alpha-value>)',
+        'border': 'rgb(var(--color-border) / <alpha-value>)',
+        'border-muted': 'rgb(var(--color-border-muted) / <alpha-value>)',
+        'ring': 'rgb(var(--color-ring) / <alpha-value>)',
 
-        'error': '#DC2626', // red-600
-        'error-50': '#FEF2F2', // red-50
-        'error-100': '#FEE2E2', // red-100
-        'error-500': '#EF4444', // red-500
-        'error-600': '#DC2626', // red-600
-        'error-foreground': '#FFFFFF', // white
-
-        // Border Colors
-        'border': '#E2E8F0', // slate-200
-        'border-muted': '#F1F5F9', // slate-100
+        'text-primary': 'rgb(var(--color-text-primary) / <alpha-value>)',
+        'text-secondary': 'rgb(var(--color-text-secondary) / <alpha-value>)',
+        'text-muted': 'rgb(var(--color-text-muted) / <alpha-value>)',
+        'text-accent': 'rgb(var(--color-text-accent) / <alpha-value>)',
       },
       fontFamily: {
         'heading': ['Inter', 'system-ui', 'sans-serif'],
