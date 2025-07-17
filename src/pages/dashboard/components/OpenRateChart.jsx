@@ -1,5 +1,6 @@
 import React, { useCallback, useMemo } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { useThemeColors } from '../../../hooks/useThemeColors';
 
 // Local debounce utility
 const debounce = (func, wait) => {
@@ -15,6 +16,8 @@ const debounce = (func, wait) => {
 };
 
 const OpenRateChart = () => {
+  const themeColors = useThemeColors();
+
   const chartData = [
     { date: '2024-01-01', openRate: 18.5, clicks: 3.2 },
     { date: '2024-01-02', openRate: 22.1, clicks: 4.1 },
@@ -92,15 +95,15 @@ const OpenRateChart = () => {
           onResize={handleResize}
         >
           <LineChart data={chartData} {...chartConfig}>
-            <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" />
+            <CartesianGrid strokeDasharray="3 3" stroke={themeColors.border} />
             <XAxis 
               dataKey="date" 
               tickFormatter={formatDate}
-              stroke="var(--color-text-secondary)"
+              stroke={themeColors.textSecondary}
               fontSize={12}
             />
             <YAxis 
-              stroke="var(--color-text-secondary)"
+              stroke={themeColors.textSecondary}
               fontSize={12}
               tickFormatter={(value) => `${value}%`}
             />
@@ -108,19 +111,19 @@ const OpenRateChart = () => {
             <Line 
               type="monotone" 
               dataKey="openRate" 
-              stroke="var(--color-primary)" 
+              stroke={themeColors.primary}
               strokeWidth={2}
-              dot={{ fill: 'var(--color-primary)', strokeWidth: 2, r: 4 }}
-              activeDot={{ r: 6, stroke: 'var(--color-primary)', strokeWidth: 2 }}
+              dot={{ fill: themeColors.primary, strokeWidth: 2, r: 4 }}
+              activeDot={{ r: 6, stroke: themeColors.primary, strokeWidth: 2 }}
               name="Open Rate"
             />
             <Line 
               type="monotone" 
               dataKey="clicks" 
-              stroke="var(--color-accent)" 
+              stroke={themeColors.accent}
               strokeWidth={2}
-              dot={{ fill: 'var(--color-accent)', strokeWidth: 2, r: 4 }}
-              activeDot={{ r: 6, stroke: 'var(--color-accent)', strokeWidth: 2 }}
+              dot={{ fill: themeColors.accent, strokeWidth: 2, r: 4 }}
+              activeDot={{ r: 6, stroke: themeColors.accent, strokeWidth: 2 }}
               name="Click Rate"
             />
           </LineChart>
