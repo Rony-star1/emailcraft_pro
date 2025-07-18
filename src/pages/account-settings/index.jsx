@@ -49,19 +49,22 @@ const AccountSettings = () => {
       key: 'profile',
       component: ProfileSection,
       title: 'Profile Information',
-      description: 'Manage your business profile and sender details'
+      description: 'Manage your business profile and sender details',
+      icon: 'User'
     },
     {
       key: 'emailPreferences',
       component: EmailPreferencesSection,
       title: 'Email Preferences',
-      description: 'Configure default email settings and notifications'
+      description: 'Configure default email settings and notifications',
+      icon: 'Mail'
     },
     {
       key: 'security',
       component: SecuritySection,
       title: 'Security Settings',
-      description: 'Manage password and account security'
+      description: 'Manage password and account security',
+      icon: 'Shield'
     }
   ];
 
@@ -137,14 +140,36 @@ const AccountSettings = () => {
           </div>
 
           {/* Settings Sections */}
-          <div className="space-y-6">
-            {settingsSections.map(({ key, component: Component }) => (
-              <Component
-                key={key}
-                isOpen={openSections[key]}
-                onToggle={() => toggleSection(key)}
-              />
-            ))}
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+            <div className="lg:col-span-1">
+              <div className="bg-surface rounded-lg border border-border p-4">
+                <nav className="space-y-1">
+                  {settingsSections.map((section) => (
+                    <button
+                      key={section.key}
+                      onClick={() => toggleSection(section.key)}
+                      className={`w-full flex items-center px-3 py-2 text-sm font-medium rounded-md ${
+                        openSections[section.key]
+                          ? 'bg-primary-50 text-primary'
+                          : 'text-text-secondary hover:bg-secondary-50 hover:text-text-primary'
+                      }`}
+                    >
+                      <Icon name={section.icon} size={16} className="mr-3" />
+                      {section.title}
+                    </button>
+                  ))}
+                </nav>
+              </div>
+            </div>
+            <div className="lg:col-span-3">
+              <div className="space-y-6">
+                {settingsSections.map(({ key, component: Component }) => (
+                  <div key={key} className={openSections[key] ? 'block' : 'hidden'}>
+                    <Component />
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
 
           {/* Help Section */}

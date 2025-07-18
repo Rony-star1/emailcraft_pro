@@ -59,69 +59,63 @@ const Dashboard = () => {
           
           <WelcomeHeader />
           
-          {/* Key Metrics Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            {isLoading ? (
-              <>
-                <MetricsSkeleton />
-                <MetricsSkeleton />
-                <MetricsSkeleton />
-                <MetricsSkeleton />
-              </>
-            ) : (
-              <>
-                <MetricsCard
-                  title="Total Campaigns"
-                  value={metrics.totalCampaigns.toString()}
-                  change="+3 this month"
-                  changeType="positive"
-                  icon="Send"
-                  color="primary"
-                />
-                <MetricsCard
-                  title="Average Open Rate"
-                  value={`${metrics.openRate}%`}
-                  change="+2.1% vs last month"
-                  changeType="positive"
-                  icon="Mail"
-                  color="success"
-                />
-                <MetricsCard
-                  title="Active Subscribers"
-                  value={metrics.activeSubscribers.toLocaleString()}
-                  change="+127 this week"
-                  changeType="positive"
-                  icon="Users"
-                  color="accent"
-                />
-                <MetricsCard
-                  title="Click Rate"
-                  value={`${metrics.recentPerformance}%`}
-                  change="+0.8% vs last month"
-                  changeType="positive"
-                  icon="MousePointer"
-                  color="warning"
-                />
-              </>
-            )}
-          </div>
-
-          {/* Quick Actions */}
-          <div className="mb-8">
-            <QuickActions />
-          </div>
-
-          {/* Charts and Analytics */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-            <div className="lg:col-span-2">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {/* Main Content */}
+            <div className="lg:col-span-2 space-y-8">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                {isLoading ? (
+                  <>
+                    <MetricsSkeleton />
+                    <MetricsSkeleton />
+                    <MetricsSkeleton />
+                    <MetricsSkeleton />
+                  </>
+                ) : (
+                  <>
+                    <MetricsCard
+                      title="Total Campaigns"
+                      value={metrics.totalCampaigns.toString()}
+                      change="+3 this month"
+                      changeType="positive"
+                      icon="Send"
+                      color="primary"
+                    />
+                    <MetricsCard
+                      title="Average Open Rate"
+                      value={`${metrics.openRate}%`}
+                      change="+2.1% vs last month"
+                      changeType="positive"
+                      icon="MailOpen"
+                      color="success"
+                    />
+                    <MetricsCard
+                      title="Active Subscribers"
+                      value={metrics.activeSubscribers.toLocaleString()}
+                      change="+127 this week"
+                      changeType="positive"
+                      icon="Users"
+                      color="accent"
+                    />
+                    <MetricsCard
+                      title="Click Rate"
+                      value={`${metrics.recentPerformance}%`}
+                      change="+0.8% vs last month"
+                      changeType="positive"
+                      icon="MousePointerClick"
+                      color="warning"
+                    />
+                  </>
+                )}
+              </div>
               <OpenRateChart />
+              <RecentCampaigns />
             </div>
-          </div>
 
-          {/* Activity Feed and Recent Campaigns */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <ActivityFeed />
-            <RecentCampaigns />
+            {/* Sidebar */}
+            <div className="space-y-8">
+              <QuickActions />
+              <ActivityFeed />
+            </div>
           </div>
         </div>
       </main>
