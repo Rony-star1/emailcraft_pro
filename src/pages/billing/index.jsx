@@ -1,6 +1,5 @@
 import React from 'react';
 import NavigationBar from '../../components/ui/NavigationBar';
-import BreadcrumbTrail from '../../components/ui/BreadcrumbTrail';
 import BillingSection from '../account-settings/components/BillingSection';
 import Icon from '../../components/AppIcon';
 
@@ -11,7 +10,6 @@ const BillingPage = () => {
 
       <main className="pt-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <BreadcrumbTrail />
 
           {/* Header */}
           <div className="mb-8">

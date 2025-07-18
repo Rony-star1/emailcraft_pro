@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import NavigationBar from '../../components/ui/NavigationBar';
-import BreadcrumbTrail from '../../components/ui/BreadcrumbTrail';
 import WelcomeHeader from './components/WelcomeHeader';
 import MetricsCard from './components/MetricsCard';
 import QuickActions from './components/QuickActions';
@@ -55,7 +54,6 @@ const Dashboard = () => {
       
       <main className="pt-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <BreadcrumbTrail />
           
           <WelcomeHeader />
           
