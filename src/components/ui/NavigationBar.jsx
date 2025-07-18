@@ -36,6 +36,12 @@ const NavigationBar = () => {
       icon: 'BarChart3', 
       tooltip: 'View campaign performance and insights' 
     },
+    {
+      label: 'Billing',
+      path: '/billing',
+      icon: 'CreditCard',
+      tooltip: 'Manage your subscription and payment details'
+    },
   ];
 
   const currentUser = {
