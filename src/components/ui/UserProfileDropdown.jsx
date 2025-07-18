@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import Icon from '../AppIcon';
 import Image from '../AppImage';
 import Button from './Button';
+import ThemeToggle from './ThemeToggle';
 
 const UserProfileDropdown = ({ user, isOpen, onToggle, onLogout }) => {
   const dropdownRef = useRef(null);
@@ -102,6 +103,8 @@ const UserProfileDropdown = ({ user, isOpen, onToggle, onLogout }) => {
                 <Icon name="Settings" size={16} className="mr-3" />
                 Account Settings
               </button>
+
+              <ThemeToggle />
               
               <button
                 onClick={handleLogoutClick}

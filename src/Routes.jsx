@@ -10,6 +10,7 @@ import CampaignAnalytics from "pages/campaign-analytics";
 import ContactManagement from "pages/contact-management";
 import CampaignBuilder from "pages/campaign-builder";
 import AccountSettings from "pages/account-settings";
+import BillingPage from "pages/billing";
 import NotFound from "pages/NotFound";
 
 const Routes = () => {
@@ -27,6 +28,7 @@ const Routes = () => {
         <Route path="/contact-management" element={<ContactManagement />} />
         <Route path="/campaign-builder" element={<CampaignBuilder />} />
         <Route path="/account-settings" element={<AccountSettings />} />
+        <Route path="/billing" element={<BillingPage />} />
         <Route path="*" element={<NotFound />} />
       </RouterRoutes>
       </ErrorBoundary>

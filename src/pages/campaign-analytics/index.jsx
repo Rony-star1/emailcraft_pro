@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import NavigationBar from '../../components/ui/NavigationBar';
-import BreadcrumbTrail from '../../components/ui/BreadcrumbTrail';
 import Icon from '../../components/AppIcon';
 import Button from '../../components/ui/Button';
 import MetricsOverviewCard from './components/MetricsOverviewCard';
@@ -110,7 +109,6 @@ const CampaignAnalytics = () => {
       
       <div className="pt-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <BreadcrumbTrail />
           
           {/* Header Section */}
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-8 space-y-4 lg:space-y-0">
