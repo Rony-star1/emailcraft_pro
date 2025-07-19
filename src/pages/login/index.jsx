@@ -8,7 +8,6 @@ import ErrorAlert from './components/ErrorAlert';
 const Login = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
-  const [rememberMe, setRememberMe] = useState(false);
   const navigate = useNavigate();
 
   const handleLogin = async (formData) => {
@@ -16,57 +15,21 @@ const Login = () => {
     setError('');
     
     try {
-      // Simulate API call delay
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      // Mock login validation
-      if (formData.email === 'test@example.com' && formData.password === 'TestPass123!') {
-        console.log('Login successful:', formData);
-        
-        // Store auth data if remember me is checked
-        if (rememberMe) {
-          localStorage.setItem('rememberUser', 'true');
-          localStorage.setItem('userEmail', formData.email);
-        }
-        
-        // Redirect to dashboard
-        navigate('/dashboard');
+      const { error } = await supabase.auth.signInWithPassword({
+        email: formData.email,
+        password: formData.password,
+      });
+
+      if (error) {
+        setError(error.message);
       } else {
-        setError('Invalid email or password. Please try again.');
+        navigate('/dashboard');
       }
-      
     } catch (error) {
-      console.error('Login failed:', error);
-      setError('An error occurred during login. Please try again.');
+      setError(error.message);
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const handleSocialLogin = async (provider) => {
-    setIsLoading(true);
-    setError('');
-    
-    try {
-      // Simulate social login
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      console.log(`Logging in with ${provider}`);
-      
-      // Mock successful social login
-      navigate('/dashboard');
-      
-    } catch (error) {
-      console.error(`${provider} login failed:`, error);
-      setError(`Failed to login with ${provider}. Please try again.`);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleForgotPassword = () => {
-    // In a real app, this would navigate to forgot password page
-    alert('Forgot password functionality would be implemented here');
   };
 
   return (
@@ -136,27 +99,6 @@ const Login = () => {
             {/* Login Form */}
             <LoginForm 
               onSubmit={handleLogin}
-              isLoading={isLoading}
-              rememberMe={rememberMe}
-              onRememberMeChange={setRememberMe}
-              onForgotPassword={handleForgotPassword}
-            />
-
-            {/* Divider */}
-            <div className="relative my-8">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-border"></div>
-              </div>
-              <div className="relative flex justify-center text-sm">
-                <span className="px-4 bg-white text-text-secondary font-medium">
-                  Or continue with
-                </span>
-              </div>
-            </div>
-
-            {/* Social Login */}
-            <SocialLogin 
-              onSocialLogin={handleSocialLogin}
               isLoading={isLoading}
             />
           </div>

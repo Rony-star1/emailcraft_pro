@@ -24,41 +24,20 @@ const Register = () => {
     setIsLoading(true);
     
     try {
-      // Simulate API call delay
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      // Mock registration logic
-      console.log('Registration data:', formData);
-      
-      // Set registered email for success modal
-      setRegisteredEmail(formData.email);
-      
-      // Show success modal
-      setShowSuccessModal(true);
-      
+      const { error } = await supabase.auth.signUp({
+        email: formData.email,
+        password: formData.password,
+      });
+
+      if (error) {
+        // In a real app, you would show error messages here
+        console.error('Registration failed:', error);
+      } else {
+        setRegisteredEmail(formData.email);
+        setShowSuccessModal(true);
+      }
     } catch (error) {
       console.error('Registration failed:', error);
-      // In a real app, you would show error messages here
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleSocialRegistration = async (provider) => {
-    setIsLoading(true);
-    
-    try {
-      // Simulate social registration
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      console.log(`Registering with ${provider}`);
-      
-      // Mock successful social registration
-      setRegisteredEmail(`user@${provider.toLowerCase()}.com`);
-      setShowSuccessModal(true);
-      
-    } catch (error) {
-      console.error(`${provider} registration failed:`, error);
     } finally {
       setIsLoading(false);
     }
@@ -123,13 +102,6 @@ const Register = () => {
             />
           </div>
 
-          {/* Social Registration */}
-          <div className="bg-surface rounded-xl shadow-elevation-2 border border-border p-6 mb-8">
-            <SocialRegistration 
-              onSocialRegister={handleSocialRegistration}
-              isLoading={isLoading}
-            />
-          </div>
 
           {/* Trust Signals */}
           <div className="bg-surface rounded-xl shadow-elevation-2 border border-border p-6">

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate, Link } from 'react-router-dom';
+import { supabase } from '../../lib/supabase';
 import Icon from '../AppIcon';
 import Button from './Button';
 import UserProfileDropdown from './UserProfileDropdown';
@@ -18,19 +19,31 @@ const NavigationBar = () => {
     { label: 'Billing', path: '/billing', icon: 'CreditCard' },
   ];
 
-  const currentUser = {
-    name: 'John Doe',
-    email: 'john@example.com',
-    avatar: '/assets/images/avatar-placeholder.png'
-  };
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      setUser(user);
+    };
+
+    fetchUser();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
 
   useEffect(() => {
     setMobileMenuOpen(false);
     setUserDropdownOpen(false);
   }, [location.pathname]);
 
-  const handleLogout = () => {
-    navigate('/register');
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    navigate('/login');
   };
 
   const isActiveRoute = (path) => location.pathname.startsWith(path);
@@ -71,7 +84,7 @@ const NavigationBar = () => {
             <div className="flex items-center">
               <div className="hidden md:block">
                 <UserProfileDropdown
-                  user={currentUser}
+                  user={user}
                   isOpen={userDropdownOpen}
                   onToggle={() => setUserDropdownOpen(!userDropdownOpen)}
                   onLogout={handleLogout}
@@ -114,31 +127,33 @@ const NavigationBar = () => {
               </Link>
             ))}
           </div>
-          <div className="pt-4 pb-3 border-t border-border">
-            <div className="flex items-center px-5">
-              <div className="flex-shrink-0">
-                <img className="h-10 w-10 rounded-full" src={currentUser.avatar} alt="" />
+          {user && (
+            <div className="pt-4 pb-3 border-t border-border">
+              <div className="flex items-center px-5">
+                <div className="flex-shrink-0">
+                  <img className="h-10 w-10 rounded-full" src={user.user_metadata.avatar_url} alt="" />
+                </div>
+                <div className="ml-3">
+                  <div className="text-base font-medium text-text-primary">{user.user_metadata.full_name}</div>
+                  <div className="text-sm font-medium text-text-secondary">{user.email}</div>
+                </div>
               </div>
-              <div className="ml-3">
-                <div className="text-base font-medium text-text-primary">{currentUser.name}</div>
-                <div className="text-sm font-medium text-text-secondary">{currentUser.email}</div>
+              <div className="mt-3 px-2 space-y-1">
+                <Link
+                  to="/account-settings"
+                  className="block px-3 py-2 rounded-md text-base font-medium text-text-secondary hover:bg-secondary-50 hover:text-text-primary"
+                >
+                  Account Settings
+                </Link>
+                <button
+                  onClick={handleLogout}
+                  className="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-text-secondary hover:bg-secondary-50 hover:text-text-primary"
+                >
+                  Sign out
+                </button>
               </div>
             </div>
-            <div className="mt-3 px-2 space-y-1">
-              <Link
-                to="/account-settings"
-                className="block px-3 py-2 rounded-md text-base font-medium text-text-secondary hover:bg-secondary-50 hover:text-text-primary"
-              >
-                Account Settings
-              </Link>
-              <button
-                onClick={handleLogout}
-                className="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-text-secondary hover:bg-secondary-50 hover:text-text-primary"
-              >
-                Sign out
-              </button>
-            </div>
-          </div>
+          )}
         </div>
       </nav>
     </>
