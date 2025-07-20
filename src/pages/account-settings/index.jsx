@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import NavigationBar from '../../components/ui/NavigationBar';
 import ProfileSection from './components/ProfileSection';
-import BillingSection from './components/BillingSection';
 import EmailPreferencesSection from './components/EmailPreferencesSection';
 import SecuritySection from './components/SecuritySection';
 import Icon from '../../components/AppIcon';
@@ -50,12 +49,6 @@ const AccountSettings = () => {
       component: ProfileSection,
       title: 'Profile Information',
       description: 'Manage your business profile and sender details'
-    },
-    {
-      key: 'billing',
-      component: BillingSection,
-      title: 'Billing & Subscription',
-      description: 'Manage your subscription and payment details'
     },
     {
       key: 'emailPreferences',

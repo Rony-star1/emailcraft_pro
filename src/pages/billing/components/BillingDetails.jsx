@@ -3,7 +3,7 @@ import Icon from '../../../components/AppIcon';
 import Button from '../../../components/ui/Button';
 import Input from '../../../components/ui/Input';
 
-const BillingSection = ({ isOpen, onToggle }) => {
+const BillingDetails = () => {
   const [selectedCurrency, setSelectedCurrency] = useState('USD');
   const [isEditingPayment, setIsEditingPayment] = useState(false);
   const [billingCycle, setBillingCycle] = useState('monthly');
@@ -17,9 +17,7 @@ const BillingSection = ({ isOpen, onToggle }) => {
   });
 
   const currencies = [
-    { code: 'USD', symbol: '$', name: 'US Dollar' },
-    { code: 'EUR', symbol: '€', name: 'Euro' },
-    { code: 'GBP', symbol: '£', name: 'British Pound' }
+    { code: 'USD', symbol: '$', name: 'US Dollar' }
   ];
 
   const plans = [
@@ -124,31 +122,8 @@ const BillingSection = ({ isOpen, onToggle }) => {
   };
 
   return (
-    <div className="bg-surface rounded-lg border border-border shadow-elevation-1">
-      <button
-        onClick={onToggle}
-        className="w-full flex items-center justify-between p-6 text-left hover:bg-secondary-50 transition-micro focus:outline-none focus:ring-2 focus:ring-primary focus:ring-inset rounded-t-lg"
-        aria-expanded={isOpen}
-      >
-        <div className="flex items-center space-x-3">
-          <div className="w-10 h-10 bg-success-100 rounded-lg flex items-center justify-center">
-            <Icon name="CreditCard" size={20} className="text-success" />
-          </div>
-          <div>
-            <h3 className="text-lg font-semibold text-text-primary">Billing & Subscription</h3>
-            <p className="text-sm text-text-secondary">Manage your subscription and payment details</p>
-          </div>
-        </div>
-        <Icon 
-          name="ChevronDown" 
-          size={20} 
-          className={`text-text-secondary transition-transform ${isOpen ? 'rotate-180' : ''}`}
-        />
-      </button>
-
-      {isOpen && (
-        <div className="px-6 pb-6 border-t border-border">
-          <div className="mt-6 space-y-8">
+<div>
+          <div className="space-y-8">
             {/* Currency Selection */}
             <div>
               <h4 className="text-md font-medium text-text-primary mb-4">Currency Preference</h4>
@@ -479,9 +454,7 @@ const BillingSection = ({ isOpen, onToggle }) => {
             </div>
           </div>
         </div>
-      )}
-    </div>
   );
 };
 
-export default BillingSection;
+export default BillingDetails;

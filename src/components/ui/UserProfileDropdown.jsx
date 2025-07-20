@@ -29,6 +29,11 @@ const UserProfileDropdown = ({ user, isOpen, onToggle, onLogout }) => {
     onToggle();
   };
 
+  const handleBillingClick = () => {
+    navigate('/billing');
+    onToggle();
+  };
+
   const handleLogoutClick = () => {
     onLogout();
     onToggle();
@@ -101,6 +106,15 @@ const UserProfileDropdown = ({ user, isOpen, onToggle, onLogout }) => {
               >
                 <Icon name="Settings" size={16} className="mr-3" />
                 Account Settings
+              </button>
+
+              <button
+                onClick={handleBillingClick}
+                className="w-full flex items-center px-4 py-2 text-sm text-text-secondary hover:text-text-primary hover:bg-secondary-50 transition-micro focus:outline-none focus:bg-secondary-50"
+                role="menuitem"
+              >
+                <Icon name="CreditCard" size={16} className="mr-3" />
+                Billing
               </button>
               
               <button
