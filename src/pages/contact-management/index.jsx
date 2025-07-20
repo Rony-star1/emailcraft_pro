@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import NavigationBar from '../../components/ui/NavigationBar';
-import BreadcrumbTrail from '../../components/ui/BreadcrumbTrail';
 import ContactActions from './components/ContactActions';
 import ContactFilters from './components/ContactFilters';
 import ContactTable from './components/ContactTable';
@@ -353,7 +352,6 @@ const ContactManagement = () => {
       
       <main className="pt-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <BreadcrumbTrail />
           
           {/* Page Header */}
           <div className="mb-8">

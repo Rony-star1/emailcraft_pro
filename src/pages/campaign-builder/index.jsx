@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import NavigationBar from '../../components/ui/NavigationBar';
-import BreadcrumbTrail from '../../components/ui/BreadcrumbTrail';
 import Icon from '../../components/AppIcon';
 import Button from '../../components/ui/Button';
 import Input from '../../components/ui/Input';
@@ -149,7 +148,6 @@ const CampaignBuilder = () => {
       
       <div className="pt-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <BreadcrumbTrail />
           
           {/* Header */}
           <div className="mb-8">
