@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import Icon from '../../components/AppIcon';
+import { apiClient, apiHelpers } from '../../utils/api';
 import LoginForm from './components/LoginForm';
 import SocialLogin from './components/SocialLogin';
 import ErrorAlert from './components/ErrorAlert';
@@ -16,25 +17,9 @@ const Login = () => {
     setError('');
     
     try {
-      // Simulate API call delay
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      // Mock login validation
-      if (formData.email === 'test@example.com' && formData.password === 'TestPass123!') {
-        console.log('Login successful:', formData);
-        
-        // Store auth data if remember me is checked
-        if (rememberMe) {
-          localStorage.setItem('rememberUser', 'true');
-          localStorage.setItem('userEmail', formData.email);
-        }
-        
-        // Redirect to dashboard
-        navigate('/dashboard');
-      } else {
-        setError('Invalid email or password. Please try again.');
-      }
-      
+      const { data } = await apiClient.auth.login(formData);
+      apiHelpers.setAuthToken(data.token);
+      navigate('/dashboard');
     } catch (error) {
       console.error('Login failed:', error);
       setError('An error occurred during login. Please try again.');

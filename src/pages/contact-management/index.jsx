@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { apiClient } from '../../utils/api';
 import NavigationBar from '../../components/ui/NavigationBar';
 import ContactActions from './components/ContactActions';
 import ContactFilters from './components/ContactFilters';
@@ -29,108 +30,16 @@ const ContactManagement = () => {
   const [editingContact, setEditingContact] = useState(null);
   const [bulkActionType, setBulkActionType] = useState('edit');
 
-  // Mock data
-  const mockContacts = [
-    {
-      id: 1,
-      name: "Sarah Johnson",
-      email: "sarah.johnson@email.com",
-      subscriptionDate: "2024-01-15",
-      status: "active",
-      engagement: "high",
-      tags: ["customer", "vip", "newsletter"],
-      source: "Website",
-      lastActivity: "2024-01-20",
-      notes: "High-value customer interested in premium features"
-    },
-    {
-      id: 2,
-      name: "Michael Chen",
-      email: "michael.chen@email.com",
-      subscriptionDate: "2024-01-10",
-      status: "active",
-      engagement: "medium",
-      tags: ["prospect", "webinar"],
-      source: "Social Media",
-      lastActivity: "2024-01-18",
-      notes: "Attended product demo webinar"
-    },
-    {
-      id: 3,
-      name: "Emily Rodriguez",
-      email: "emily.rodriguez@email.com",
-      subscriptionDate: "2024-01-08",
-      status: "unsubscribed",
-      engagement: "low",
-      tags: ["former-customer"],
-      source: "Email Campaign",
-      lastActivity: "2024-01-12",
-      notes: "Unsubscribed due to frequency concerns"
-    },
-    {
-      id: 4,
-      name: "David Thompson",
-      email: "david.thompson@email.com",
-      subscriptionDate: "2024-01-05",
-      status: "active",
-      engagement: "high",
-      tags: ["customer", "beta-tester", "feedback"],
-      source: "Referral",
-      lastActivity: "2024-01-22",
-      notes: "Active beta tester providing valuable feedback"
-    },
-    {
-      id: 5,
-      name: "Lisa Wang",
-      email: "lisa.wang@email.com",
-      subscriptionDate: "2024-01-03",
-      status: "bounced",
-      engagement: "none",
-      tags: ["prospect"],
-      source: "Event",
-      lastActivity: "2024-01-03",
-      notes: "Email bounced - need to verify address"
-    },
-    {
-      id: 6,
-      name: "James Wilson",
-      email: "james.wilson@email.com",
-      subscriptionDate: "2023-12-28",
-      status: "active",
-      engagement: "medium",
-      tags: ["newsletter", "blog-subscriber"],
-      source: "Website",
-      lastActivity: "2024-01-19",
-      notes: "Regular blog reader and newsletter subscriber"
-    },
-    {
-      id: 7,
-      name: "Maria Garcia",
-      email: "maria.garcia@email.com",
-      subscriptionDate: "2023-12-25",
-      status: "active",
-      engagement: "high",
-      tags: ["customer", "advocate", "referrer"],
-      source: "Manual Entry",
-      lastActivity: "2024-01-21",
-      notes: "Brand advocate who refers new customers"
-    },
-    {
-      id: 8,
-      name: "Robert Kim",
-      email: "robert.kim@email.com",
-      subscriptionDate: "2023-12-20",
-      status: "active",
-      engagement: "low",
-      tags: ["prospect", "trial-user"],
-      source: "Website",
-      lastActivity: "2024-01-10",
-      notes: "Currently on free trial, low engagement"
-    }
-  ];
-
   useEffect(() => {
-    setContacts(mockContacts);
+    const fetchContacts = async () => {
+      try {
+        const { data } = await apiClient.contacts.getAll();
+        setContacts(data.contacts);
+      } catch (error) {
+        console.error("Failed to fetch contacts", error);
+      }
+    };
+    fetchContacts();
   }, []);
 
   useEffect(() => {
@@ -228,35 +137,28 @@ const ContactManagement = () => {
   };
 
   const handleSaveContact = async (contactData) => {
-    if (editingContact) {
-      // Update existing contact
-      setContacts(prev => prev.map(contact => 
-        contact.id === editingContact.id 
-          ? { 
-              ...contact, 
-              ...contactData,
-              lastActivity: new Date().toISOString().split('T')[0]
-            }
-          : contact
-      ));
-    } else {
-      // Add new contact
-      const newContact = {
-        id: Date.now(),
-        ...contactData,
-        subscriptionDate: new Date().toISOString().split('T')[0],
-        lastActivity: new Date().toISOString().split('T')[0],
-        status: 'active',
-        engagement: 'none'
-      };
-      setContacts(prev => [...prev, newContact]);
+    try {
+      if (editingContact) {
+        const { data } = await apiClient.contacts.update(editingContact.id, contactData);
+        setContacts(prev => prev.map(contact => (contact.id === editingContact.id ? data.contact : contact)));
+      } else {
+        const { data } = await apiClient.contacts.create(contactData);
+        setContacts(prev => [...prev, data.contact]);
+      }
+    } catch (error) {
+      console.error("Failed to save contact", error);
     }
   };
 
-  const handleDeleteContact = (contactId) => {
+  const handleDeleteContact = async (contactId) => {
     if (window.confirm('Are you sure you want to delete this contact?')) {
-      setContacts(prev => prev.filter(contact => contact.id !== contactId));
-      setSelectedContacts(prev => prev.filter(id => id !== contactId));
+      try {
+        await apiClient.contacts.delete(contactId);
+        setContacts(prev => prev.filter(contact => contact.id !== contactId));
+        setSelectedContacts(prev => prev.filter(id => id !== contactId));
+      } catch (error) {
+        console.error("Failed to delete contact", error);
+      }
     }
   };
 

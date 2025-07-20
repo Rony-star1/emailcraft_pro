@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { apiClient } from '../../utils/api';
 import NavigationBar from '../../components/ui/NavigationBar';
 import Icon from '../../components/AppIcon';
 import Button from '../../components/ui/Button';
@@ -78,23 +79,36 @@ const CampaignBuilder = () => {
 
   const handleSaveDraft = async () => {
     setIsSaving(true);
-    // Simulate API call
-    setTimeout(() => {
-      setIsSaving(false);
-      setLastSaved(new Date());
-    }, 1500);
-  };
-
-  const handleSendCampaign = () => {
-    if (completedTabs.length === tabs.length) {
-      console.log('Sending campaign...', {
+    try {
+      await apiClient.campaigns.create({
         name: campaignName,
         content: emailContent,
         subject: subjectLine,
-        lists: selectedLists,
-        schedule: scheduleType,
-        scheduledDate: scheduledDate
+        contacts: selectedLists,
+        status: 'draft'
       });
+      setLastSaved(new Date());
+    } catch (error) {
+      console.error("Failed to save draft", error);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleSendCampaign = async () => {
+    if (completedTabs.length === tabs.length) {
+      try {
+        await apiClient.campaigns.create({
+          name: campaignName,
+          content: emailContent,
+          subject: subjectLine,
+          contacts: selectedLists,
+          status: 'sent'
+        });
+        // navigate to dashboard or campaigns list
+      } catch (error) {
+        console.error("Failed to send campaign", error);
+      }
     }
   };
 

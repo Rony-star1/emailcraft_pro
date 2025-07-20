@@ -1,7 +1,8 @@
 import express from 'express';
 import { DodoPaymentsClient } from '../services/dodoPayments.js';
-import { supabase } from '../server.js';
+import { databases } from '../server.js';
 import { authenticateToken } from '../middleware/auth.js';
+import { ID } from 'node-appwrite';
 import { validatePaymentRequest } from '../middleware/validation.js';
 
 const router = express.Router();
@@ -72,22 +73,20 @@ router.post('/create-intent', authenticateToken, validatePaymentRequest, async (
     });
 
     // Store payment intent in database
-    const { data, error } = await supabase
-      .from('payment_intents')
-      .insert({
+    const data = await databases.createDocument(
+      'db',
+      'payment_intents',
+      ID.unique(),
+      {
         id: paymentIntent.id,
-        user_id: userId,
+        userId,
         amount,
         currency,
-        plan_id: planId,
-        billing_cycle: billingCycle,
+        planId,
+        billingCycle,
         status: 'pending',
-        created_at: new Date().toISOString()
-      });
-
-    if (error) {
-      throw error;
-    }
+      }
+    );
 
     res.json({ 
       clientSecret: paymentIntent.client_secret,
@@ -114,54 +113,65 @@ router.post('/confirm/:paymentIntentId', authenticateToken, async (req, res) => 
     });
 
     if (confirmedPayment.status === 'succeeded') {
-      // Update payment intent status
-      const { error: updateError } = await supabase
-        .from('payment_intents')
-        .update({ 
-          status: 'succeeded',
-          payment_method_id: paymentMethodId,
-          confirmed_at: new Date().toISOString()
-        })
-        .eq('id', paymentIntentId)
-        .eq('user_id', userId);
-
-      if (updateError) {
-        throw updateError;
-      }
-
       // Get payment intent details
-      const { data: paymentIntent, error: fetchError } = await supabase
-        .from('payment_intents')
-        .select('*')
-        .eq('id', paymentIntentId)
-        .single();
+      const { documents: [paymentIntent] } = await databases.listDocuments(
+        'db',
+        'payment_intents',
+        [`id=${paymentIntentId}`]
+      );
 
-      if (fetchError) {
-        throw fetchError;
-      }
+      // Update payment intent status
+      await databases.updateDocument(
+        'db',
+        'payment_intents',
+        paymentIntent.$id,
+        {
+          status: 'succeeded',
+          paymentMethodId,
+        }
+      );
 
       // Update user subscription
       const subscriptionEndDate = new Date();
-      if (paymentIntent.billing_cycle === 'yearly') {
+      if (paymentIntent.billingCycle === 'yearly') {
         subscriptionEndDate.setFullYear(subscriptionEndDate.getFullYear() + 1);
       } else {
         subscriptionEndDate.setMonth(subscriptionEndDate.getMonth() + 1);
       }
 
-      const { error: subError } = await supabase
-        .from('subscriptions')
-        .upsert({
-          user_id: userId,
-          plan_id: paymentIntent.plan_id,
-          billing_cycle: paymentIntent.billing_cycle,
-          status: 'active',
-          current_period_start: new Date().toISOString(),
-          current_period_end: subscriptionEndDate.toISOString(),
-          updated_at: new Date().toISOString()
-        });
+      const { documents: [subscription] } = await databases.listDocuments(
+        'db',
+        'subscriptions',
+        [`userId=${userId}`]
+      );
 
-      if (subError) {
-        throw subError;
+      if (subscription) {
+        await databases.updateDocument(
+          'db',
+          'subscriptions',
+          subscription.$id,
+          {
+            planId: paymentIntent.planId,
+            billingCycle: paymentIntent.billingCycle,
+            status: 'active',
+            currentPeriodStart: new Date().toISOString(),
+            currentPeriodEnd: subscriptionEndDate.toISOString(),
+          }
+        );
+      } else {
+        await databases.createDocument(
+          'db',
+          'subscriptions',
+          ID.unique(),
+          {
+            userId,
+            planId: paymentIntent.planId,
+            billingCycle: paymentIntent.billingCycle,
+            status: 'active',
+            currentPeriodStart: new Date().toISOString(),
+            currentPeriodEnd: subscriptionEndDate.toISOString(),
+          }
+        );
       }
 
       res.json({ 
@@ -189,15 +199,11 @@ router.get('/subscription', authenticateToken, async (req, res) => {
   try {
     const userId = req.user.id;
 
-    const { data: subscription, error } = await supabase
-      .from('subscriptions')
-      .select('*')
-      .eq('user_id', userId)
-      .single();
-
-    if (error && error.code !== 'PGRST116') {
-      throw error;
-    }
+    const { documents: [subscription] } = await databases.listDocuments(
+        'db',
+        'subscriptions',
+        [`userId=${userId}`]
+    );
 
     res.json({ subscription: subscription || null });
 
@@ -212,16 +218,21 @@ router.post('/cancel-subscription', authenticateToken, async (req, res) => {
   try {
     const userId = req.user.id;
 
-    const { error } = await supabase
-      .from('subscriptions')
-      .update({ 
-        status: 'cancelled',
-        cancelled_at: new Date().toISOString()
-      })
-      .eq('user_id', userId);
+    const { documents: [subscription] } = await databases.listDocuments(
+        'db',
+        'subscriptions',
+        [`userId=${userId}`]
+    );
 
-    if (error) {
-      throw error;
+    if (subscription) {
+      await databases.updateDocument(
+        'db',
+        'subscriptions',
+        subscription.$id,
+        {
+          status: 'cancelled',
+        }
+      );
     }
 
     res.json({ success: true });
@@ -237,16 +248,11 @@ router.get('/history', authenticateToken, async (req, res) => {
   try {
     const userId = req.user.id;
 
-    const { data: payments, error } = await supabase
-      .from('payment_intents')
-      .select('*')
-      .eq('user_id', userId)
-      .eq('status', 'succeeded')
-      .order('created_at', { ascending: false });
-
-    if (error) {
-      throw error;
-    }
+    const { documents: payments } = await databases.listDocuments(
+        'db',
+        'payment_intents',
+        [`userId=${userId}`, `status=succeeded`]
+    );
 
     res.json({ payments });
 

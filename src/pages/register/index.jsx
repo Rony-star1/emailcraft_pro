@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import Icon from '../../components/AppIcon';
+import { apiClient } from '../../utils/api';
 import RegistrationForm from './components/RegistrationForm';
 import SocialRegistration from './components/SocialRegistration';
 import TrustSignals from './components/TrustSignals';
@@ -24,11 +25,7 @@ const Register = () => {
     setIsLoading(true);
     
     try {
-      // Simulate API call delay
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      // Mock registration logic
-      console.log('Registration data:', formData);
+      await apiClient.auth.register(formData);
       
       // Set registered email for success modal
       setRegisteredEmail(formData.email);

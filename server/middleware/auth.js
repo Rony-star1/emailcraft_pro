@@ -1,5 +1,6 @@
 import jwt from 'jsonwebtoken';
-import { supabase } from '../server.js';
+import { users } from '../server.js';
+import { databases } from '../server.js';
 
 export const authenticateToken = async (req, res, next) => {
   const authHeader = req.headers['authorization'];
@@ -12,14 +13,10 @@ export const authenticateToken = async (req, res, next) => {
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     
-    // Get user from Supabase
-    const { data: user, error } = await supabase
-      .from('users')
-      .select('*')
-      .eq('id', decoded.userId)
-      .single();
+    // Get user from Appwrite
+    const user = await users.get(decoded.userId);
 
-    if (error || !user) {
+    if (!user) {
       return res.status(401).json({ error: 'Invalid token' });
     }
 
@@ -34,14 +31,16 @@ export const checkSubscription = async (req, res, next) => {
   try {
     const userId = req.user.id;
 
-    const { data: subscription, error } = await supabase
-      .from('subscriptions')
-      .select('*')
-      .eq('user_id', userId)
-      .eq('status', 'active')
-      .single();
+    const { documents: [subscription] } = await databases.listDocuments(
+      'db',
+      'subscriptions',
+      [
+        `userId=${userId}`,
+        `status=active`
+      ]
+    );
 
-    if (error || !subscription) {
+    if (!subscription) {
       return res.status(403).json({ error: 'Active subscription required' });
     }
 
@@ -59,8 +58,44 @@ export const checkSubscription = async (req, res, next) => {
     return res.status(500).json({ error: 'Failed to check subscription' });
   }
 };
-export function authRoutes(...args) {
-  // eslint-disable-next-line no-console
-  console.warn('Placeholder: authRoutes is not implemented yet.', args);
-  return null;
-}
+import express from 'express';
+import bcrypt from 'bcryptjs';
+import { account, users } from '../server.js';
+import { ID } from 'node-appwrite';
+
+const router = express.Router();
+
+// User registration
+router.post('/register', async (req, res) => {
+  try {
+    const { email, password, name } = req.body;
+
+    // Create user in Appwrite
+    const user = await users.create(ID.unique(), email, null, password, name);
+
+    res.status(201).json({ user });
+  } catch (error) {
+    console.error('Registration error:', error);
+    res.status(500).json({ error: 'Failed to register user' });
+  }
+});
+
+// User login
+router.post('/login', async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    // Create email session
+    const session = await account.createEmailPasswordSession(email, password);
+
+    // Create JWT
+    const token = jwt.sign({ userId: session.userId }, process.env.JWT_SECRET, { expiresIn: '1h' });
+
+    res.json({ token });
+  } catch (error) {
+    console.error('Login error:', error);
+    res.status(500).json({ error: 'Failed to login' });
+  }
+});
+
+export { router as authRoutes };

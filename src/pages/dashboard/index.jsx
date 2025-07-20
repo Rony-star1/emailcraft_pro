@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { apiClient } from '../../utils/api';
 import NavigationBar from '../../components/ui/NavigationBar';
 import WelcomeHeader from './components/WelcomeHeader';
 import MetricsCard from './components/MetricsCard';
@@ -19,17 +20,21 @@ const Dashboard = () => {
   // Simulate data loading
   useEffect(() => {
     const loadDashboardData = async () => {
-      // Simulate API call delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      setMetrics({
-        totalCampaigns: 47,
-        openRate: 28.4,
-        activeSubscribers: 3247,
-        recentPerformance: 12.3
-      });
-      
-      setIsLoading(false);
+      try {
+        const { data: { campaigns } } = await apiClient.campaigns.getAll();
+        const { data: { analytics } } = await apiClient.analytics.getDashboard();
+
+        setMetrics({
+          totalCampaigns: campaigns.length,
+          openRate: analytics.openRate,
+          activeSubscribers: analytics.activeSubscribers,
+          recentPerformance: analytics.clickRate
+        });
+      } catch (error) {
+        console.error('Failed to load dashboard data:', error);
+      } finally {
+        setIsLoading(false);
+      }
     };
 
     loadDashboardData();
