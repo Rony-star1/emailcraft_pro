@@ -1,169 +1,173 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import Icon from '../../components/AppIcon';
-import { apiClient } from '../../utils/api';
-import RegistrationForm from './components/RegistrationForm';
-import SocialRegistration from './components/SocialRegistration';
-import TrustSignals from './components/TrustSignals';
-import SuccessModal from './components/SuccessModal';
+import { useAuth } from '../../context/AuthContext';
 
 const Register = () => {
-  const [isLoading, setIsLoading] = useState(false);
-  const [showSuccessModal, setShowSuccessModal] = useState(false);
-  const [registeredEmail, setRegisteredEmail] = useState('');
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
+  });
+  const [localError, setLocalError] = useState('');
+  const { register, isLoading, error, clearError, isAuthenticated } = useAuth();
   const navigate = useNavigate();
 
-  // Mock credentials for testing
-  const mockCredentials = {
-    businessName: 'Test Business',
-    email: 'test@example.com',
-    password: 'TestPass123!',
-    nicheMarket: 'vegan-fitness'
-  };
-
-  const handleRegistration = async (formData) => {
-    setIsLoading(true);
-    
-    try {
-      await apiClient.auth.register(formData);
-      
-      // Set registered email for success modal
-      setRegisteredEmail(formData.email);
-      
-      // Show success modal
-      setShowSuccessModal(true);
-      
-    } catch (error) {
-      console.error('Registration failed:', error);
-      // In a real app, you would show error messages here
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleSocialRegistration = async (provider) => {
-    setIsLoading(true);
-    
-    try {
-      // Simulate social registration
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      console.log(`Registering with ${provider}`);
-      
-      // Mock successful social registration
-      setRegisteredEmail(`user@${provider.toLowerCase()}.com`);
-      setShowSuccessModal(true);
-      
-    } catch (error) {
-      console.error(`${provider} registration failed:`, error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleSuccessModalClose = () => {
-    setShowSuccessModal(false);
-    // In a real app, you might redirect to a verification page
-    // For now, we'll redirect to dashboard
-    setTimeout(() => {
+  useEffect(() => {
+    if (isAuthenticated) {
       navigate('/dashboard');
-    }, 500);
+    }
+  }, [isAuthenticated, navigate]);
+
+  useEffect(() => {
+    if (error) {
+      const timer = setTimeout(() => {
+        clearError();
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [error, clearError]);
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+    if (localError) {
+      setLocalError('');
+    }
   };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    
+    if (formData.password !== formData.confirmPassword) {
+      setLocalError('Passwords do not match');
+      return;
+    }
+
+    if (formData.password.length < 6) {
+      setLocalError('Password must be at least 6 characters long');
+      return;
+    }
+
+    try {
+      await register(formData.name, formData.email, formData.password);
+      navigate('/dashboard');
+    } catch (err) {
+      // Error is handled by context
+    }
+  };
+
+  const displayError = localError || error;
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="bg-surface border-b border-border">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            {/* Logo */}
-            <div className="flex items-center space-x-3">
-              <div className="w-8 h-8 bg-primary rounded-md flex items-center justify-center">
-                <Icon name="Mail" size={20} color="white" />
-              </div>
-              <span className="text-xl font-semibold text-text-primary font-heading">
-                EmailCraft Pro
-              </span>
-            </div>
-
-            {/* Login Link */}
-            <Link
-              to="/dashboard"
-              className="text-sm text-text-secondary hover:text-text-primary transition-micro flex items-center space-x-1"
-            >
-              <span>Already have an account?</span>
-              <span className="text-primary font-medium">Sign in</span>
-              <Icon name="ArrowRight" size={14} className="text-primary" />
-            </Link>
-          </div>
+    <div className="min-h-screen bg-white flex items-center justify-center px-4">
+      <div className="w-full max-w-md">
+        <div className="text-center mb-8">
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">
+            Create your account
+          </h1>
         </div>
-      </header>
 
-      {/* Main Content */}
-      <main className="flex-1">
-        <div className="max-w-md mx-auto px-4 py-8 sm:px-6 lg:px-8">
-          {/* Welcome Section */}
-          <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-text-primary mb-2">
-              Create Your Account
-            </h1>
-            <p className="text-text-secondary">
-              Join thousands of successful niche marketers and start growing your email campaigns with AI-powered optimization.
-            </p>
-          </div>
-
-          {/* Registration Form Card */}
-          <div className="bg-surface rounded-xl shadow-elevation-2 border border-border p-6 mb-8">
-            <RegistrationForm 
-              onSubmit={handleRegistration}
-              isLoading={isLoading}
-            />
-          </div>
-
-          {/* Social Registration */}
-          <div className="bg-surface rounded-xl shadow-elevation-2 border border-border p-6 mb-8">
-            <SocialRegistration 
-              onSocialRegister={handleSocialRegistration}
-              isLoading={isLoading}
-            />
-          </div>
-
-          {/* Trust Signals */}
-          <div className="bg-surface rounded-xl shadow-elevation-2 border border-border p-6">
-            <TrustSignals />
-          </div>
-
-          {/* Footer Links */}
-          <div className="text-center mt-8 space-y-2">
-            <p className="text-xs text-text-muted">
-              By creating an account, you agree to our{' '}
-              <a href="#" className="text-primary hover:underline">Terms of Service</a>
-              {' '}and{' '}
-              <a href="#" className="text-primary hover:underline">Privacy Policy</a>
-            </p>
-            
-            {/* Mock Credentials Info */}
-            <div className="bg-accent-50 border border-accent-200 rounded-lg p-3 mt-4">
-              <p className="text-xs text-accent-600 font-medium mb-1">
-                Demo Credentials (for testing):
-              </p>
-              <div className="text-xs text-accent-600 space-y-1">
-                <p>Business: {mockCredentials.businessName}</p>
-                <p>Email: {mockCredentials.email}</p>
-                <p>Password: {mockCredentials.password}</p>
-                <p>Niche: {mockCredentials.nicheMarket}</p>
+        <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-8">
+          {displayError && (
+            <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-md">
+              <div className="text-sm text-red-600">
+                {displayError}
               </div>
             </div>
+          )}
+
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div>
+              <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
+                Full name
+              </label>
+              <input
+                id="name"
+                name="name"
+                type="text"
+                value={formData.name}
+                onChange={handleChange}
+                required
+                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                placeholder="Enter your full name"
+              />
+            </div>
+
+            <div>
+              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+                Email address
+              </label>
+              <input
+                id="email"
+                name="email"
+                type="email"
+                value={formData.email}
+                onChange={handleChange}
+                required
+                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                placeholder="Enter your email"
+              />
+            </div>
+
+            <div>
+              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+                Password
+              </label>
+              <input
+                id="password"
+                name="password"
+                type="password"
+                value={formData.password}
+                onChange={handleChange}
+                required
+                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                placeholder="Create a password"
+              />
+            </div>
+
+            <div>
+              <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-2">
+                Confirm password
+              </label>
+              <input
+                id="confirmPassword"
+                name="confirmPassword"
+                type="password"
+                value={formData.confirmPassword}
+                onChange={handleChange}
+                required
+                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                placeholder="Confirm your password"
+              />
+            </div>
+
+            <div>
+              <button
+                type="submit"
+                disabled={isLoading}
+                className="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isLoading ? 'Creating account...' : 'Create account'}
+              </button>
+            </div>
+          </form>
+
+          <div className="mt-6 text-center">
+            <p className="text-sm text-gray-600">
+              Already have an account?{' '}
+              <Link
+                to="/login"
+                className="font-medium text-blue-600 hover:text-blue-500"
+              >
+                Sign in
+              </Link>
+            </p>
           </div>
         </div>
-      </main>
-
-      {/* Success Modal */}
-      <SuccessModal
-        isOpen={showSuccessModal}
-        onClose={handleSuccessModalClose}
-        email={registeredEmail}
-      />
+      </div>
     </div>
   );
 };
