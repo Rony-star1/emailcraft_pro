@@ -131,4 +131,4 @@ router.post('/logout', authenticateToken, async (req, res) => {
   }
 });
 
-export { router as authRoutes };
+export { router as authRoutes, authenticateToken };
