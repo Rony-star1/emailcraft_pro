@@ -1,0 +1,108 @@
+{
+  "total_tests": 9,
+  "passed": 9,
+  "failed": 0,
+  "success_rate": "100.0%",
+  "test_user_email": "testuser_e51cc2b8@emailcraft.test",
+  "timestamp": "2025-07-21T17:09:49.853428",
+  "results": [
+    {
+      "test": "Health Check",
+      "success": true,
+      "message": "Server is running - Status: OK",
+      "timestamp": "2025-07-21T17:09:41.634426",
+      "response_data": {
+        "status": "OK",
+        "timestamp": "2025-07-21T17:09:41.626Z",
+        "environment": "development"
+      }
+    },
+    {
+      "test": "User Registration",
+      "success": true,
+      "message": "User registered successfully with JWT token",
+      "timestamp": "2025-07-21T17:09:44.266931",
+      "response_data": {
+        "user_id": "687e7455002c3e6411e9",
+        "email": "testuser_e51cc2b8@emailcraft.test",
+        "name": "Test User",
+        "has_token": true
+      }
+    },
+    {
+      "test": "User Login",
+      "success": true,
+      "message": "Login successful with JWT token",
+      "timestamp": "2025-07-21T17:09:45.768054",
+      "response_data": {
+        "user_id": "687e7455002c3e6411e9",
+        "email": "testuser_e51cc2b8@emailcraft.test",
+        "name": "Test User",
+        "has_token": true
+      }
+    },
+    {
+      "test": "Token Validation",
+      "success": true,
+      "message": "JWT token validated successfully",
+      "timestamp": "2025-07-21T17:09:46.347265",
+      "response_data": {
+        "user_id": "687e7455002c3e6411e9",
+        "email": "testuser_e51cc2b8@emailcraft.test",
+        "name": "Test User"
+      }
+    },
+    {
+      "test": "Invalid Credentials Login",
+      "success": true,
+      "message": "Correctly rejected invalid credentials",
+      "timestamp": "2025-07-21T17:09:47.108742",
+      "response_data": {
+        "status_code": 401,
+        "error_message": "Invalid email or password"
+      }
+    },
+    {
+      "test": "Duplicate Email Registration",
+      "success": true,
+      "message": "Correctly rejected duplicate email",
+      "timestamp": "2025-07-21T17:09:47.840910",
+      "response_data": {
+        "status_code": 409,
+        "error_message": "User with this email already exists"
+      }
+    },
+    {
+      "test": "Invalid Token Access",
+      "success": true,
+      "message": "Correctly rejected invalid token",
+      "timestamp": "2025-07-21T17:09:48.345260",
+      "response_data": {
+        "status_code": 403,
+        "error_message": "Invalid token"
+      }
+    },
+    {
+      "test": "Missing Token Access",
+      "success": true,
+      "message": "Correctly rejected missing token",
+      "timestamp": "2025-07-21T17:09:48.849098",
+      "response_data": {
+        "status_code": 401,
+        "error_message": "Access token required"
+      }
+    },
+    {
+      "test": "CORS Configuration",
+      "success": true,
+      "message": "CORS headers properly configured",
+      "timestamp": "2025-07-21T17:09:49.353115",
+      "response_data": {
+        "access-control-allow-origin": "http://localhost:3000",
+        "access-control-allow-methods": "GET,HEAD,PUT,PATCH,POST,DELETE",
+        "access-control-allow-headers": "Content-Type",
+        "access-control-allow-credentials": "true"
+      }
+    }
+  ]
+}
