@@ -8,11 +8,11 @@ import dotenv from 'dotenv';
 import { Client, Account, Databases, Users } from 'node-appwrite';
 
 // Import routes
-import { authRoutes } from './middleware/auth';
+import { authRoutes } from './middleware/auth.js';
 import paymentRoutes from './routes/payments.js';
-import campaignRoutes from './routes/campaigns';
-import contactRoutes from './routes/contacts';
-import analyticsRoutes from './routes/analytics';
+import campaignRoutes from './routes/campaigns.js';
+import contactRoutes from './routes/contacts.js';
+import analyticsRoutes from './routes/analytics.js';
 import aiRoutes from './routes/ai.js';
 
 // Load environment variables
