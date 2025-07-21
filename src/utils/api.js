@@ -14,7 +14,7 @@ const api = axios.create({
 // Request interceptor to add authentication token
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('authToken');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -27,11 +27,11 @@ api.interceptors.request.use(
 
 // Response interceptor to handle errors
 api.interceptors.response.use(
-  (response) => response,
+  (response) => response.data,
   (error) => {
     if (error.response?.status === 401) {
       // Token expired or invalid
-      localStorage.removeItem('token');
+      localStorage.removeItem('authToken');
       window.location.href = '/login';
     }
     return Promise.reject(error);
@@ -45,9 +45,9 @@ export const apiClient = {
     login: (credentials) => api.post('/auth/login', credentials),
     register: (userData) => api.post('/auth/register', userData),
     logout: () => api.post('/auth/logout'),
-    refreshToken: () => api.post('/auth/refresh'),
-    forgotPassword: (email) => api.post('/auth/forgot-password', { email }),
-    resetPassword: (token, password) => api.post('/auth/reset-password', { token, password }),
+    me: (token) => api.get('/auth/me', {
+      headers: { Authorization: `Bearer ${token}` }
+    }),
   },
 
   // Payment endpoints
@@ -148,20 +148,20 @@ export const apiHelpers = {
   // Set auth token
   setAuthToken: (token) => {
     if (token) {
-      localStorage.setItem('token', token);
+      localStorage.setItem('authToken', token);
     } else {
-      localStorage.removeItem('token');
+      localStorage.removeItem('authToken');
     }
   },
 
   // Get auth token
   getAuthToken: () => {
-    return localStorage.getItem('token');
+    return localStorage.getItem('authToken');
   },
 
   // Check if user is authenticated
   isAuthenticated: () => {
-    return !!localStorage.getItem('token');
+    return !!localStorage.getItem('authToken');
   },
 
   // Format API response
