@@ -1,45 +1,48 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { useAuth } from '../../contexts/AuthContext';
 import Icon from '../../components/AppIcon';
 import LoginForm from './components/LoginForm';
 import SocialLogin from './components/SocialLogin';
 import ErrorAlert from './components/ErrorAlert';
 
 const Login = () => {
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
   const navigate = useNavigate();
+  const { login, isLoading, error, isAuthenticated, clearError } = useAuth();
+
+  // Redirect if already authenticated
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/dashboard');
+    }
+  }, [isAuthenticated, navigate]);
 
   const handleLogin = async (formData) => {
-    setIsLoading(true);
-    setError('');
+    clearError();
     
     try {
-      // Simulate API call delay
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      const result = await login({
+        email: formData.email,
+        password: formData.password
+      });
       
-      // Mock login validation
-      if (formData.email === 'test@example.com' && formData.password === 'TestPass123!') {
-        console.log('Login successful:', formData);
+      if (result.success) {
+        console.log('Login successful');
         
-        // Store auth data if remember me is checked
+        // Store remember me preference if checked
         if (rememberMe) {
           localStorage.setItem('rememberUser', 'true');
           localStorage.setItem('userEmail', formData.email);
         }
         
-        // Redirect to dashboard
+        // Redirect to dashboard (will happen automatically via useEffect)
         navigate('/dashboard');
-      } else {
-        setError('Invalid email or password. Please try again.');
       }
+      // Error handling is managed by the auth context
       
     } catch (error) {
       console.error('Login failed:', error);
-      setError('An error occurred during login. Please try again.');
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -128,7 +131,7 @@ const Login = () => {
               <div className="mb-6">
                 <ErrorAlert 
                   message={error} 
-                  onClose={() => setError('')} 
+                  onClose={clearError} 
                 />
               </div>
             )}

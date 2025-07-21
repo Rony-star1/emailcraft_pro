@@ -59,8 +59,4 @@ export const checkSubscription = async (req, res, next) => {
     return res.status(500).json({ error: 'Failed to check subscription' });
   }
 };
-export function authRoutes(...args) {
-  // eslint-disable-next-line no-console
-  console.warn('Placeholder: authRoutes is not implemented yet.', args);
-  return null;
-}
+

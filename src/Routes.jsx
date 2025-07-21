@@ -2,6 +2,7 @@ import React from "react";
 import { BrowserRouter, Routes as RouterRoutes, Route } from "react-router-dom";
 import ScrollToTop from "components/ScrollToTop";
 import ErrorBoundary from "components/ErrorBoundary";
+import ProtectedRoute from "components/ProtectedRoute";
 // Add your imports here
 import Login from "pages/login";
 import Register from "pages/register";
@@ -18,15 +19,43 @@ const Routes = () => {
       <ErrorBoundary>
       <ScrollToTop />
       <RouterRoutes>
-        {/* Define your routes here */}
-        <Route path="/" element={<Dashboard />} />
+        {/* Public routes */}
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/campaign-analytics" element={<CampaignAnalytics />} />
-        <Route path="/contact-management" element={<ContactManagement />} />
-        <Route path="/campaign-builder" element={<CampaignBuilder />} />
-        <Route path="/account-settings" element={<AccountSettings />} />
+        
+        {/* Protected routes */}
+        <Route path="/" element={
+          <ProtectedRoute>
+            <Dashboard />
+          </ProtectedRoute>
+        } />
+        <Route path="/dashboard" element={
+          <ProtectedRoute>
+            <Dashboard />
+          </ProtectedRoute>
+        } />
+        <Route path="/campaign-analytics" element={
+          <ProtectedRoute>
+            <CampaignAnalytics />
+          </ProtectedRoute>
+        } />
+        <Route path="/contact-management" element={
+          <ProtectedRoute>
+            <ContactManagement />
+          </ProtectedRoute>
+        } />
+        <Route path="/campaign-builder" element={
+          <ProtectedRoute>
+            <CampaignBuilder />
+          </ProtectedRoute>
+        } />
+        <Route path="/account-settings" element={
+          <ProtectedRoute>
+            <AccountSettings />
+          </ProtectedRoute>
+        } />
+        
+        {/* 404 route */}
         <Route path="*" element={<NotFound />} />
       </RouterRoutes>
       </ErrorBoundary>

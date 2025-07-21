@@ -8,7 +8,7 @@ import dotenv from 'dotenv';
 import { createClient } from '@supabase/supabase-js';
 
 // Import routes
-import { authRoutes } from './middleware/auth';
+import authRoutes from './routes/auth.js';
 import paymentRoutes from './routes/payments.js';
 import campaignRoutes from './routes/campaigns';
 import contactRoutes from './routes/contacts';

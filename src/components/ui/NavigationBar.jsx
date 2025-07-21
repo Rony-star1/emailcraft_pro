@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../contexts/AuthContext';
 import Icon from '../AppIcon';
 import Button from './Button';
 import UserProfileDropdown from './UserProfileDropdown';
@@ -10,6 +11,7 @@ const NavigationBar = () => {
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
+  const { user, logout } = useAuth();
 
   const navigationItems = [
     { 
@@ -38,9 +40,14 @@ const NavigationBar = () => {
     },
   ];
 
-  const currentUser = {
-    name: 'John Doe',
-    email: 'john@example.com',
+  // Use authenticated user data or fallback
+  const currentUser = user ? {
+    name: user.businessName || user.email,
+    email: user.email,
+    avatar: '/assets/images/avatar-placeholder.png'
+  } : {
+    name: 'User',
+    email: '',
     avatar: '/assets/images/avatar-placeholder.png'
   };
 
@@ -53,10 +60,16 @@ const NavigationBar = () => {
     navigate('/dashboard');
   };
 
-  const handleLogout = () => {
-    // Logout logic would go here
-    console.log('Logging out...');
-    navigate('/register');
+  const handleLogout = async () => {
+    try {
+      await logout();
+      console.log('Logged out successfully');
+      navigate('/login');
+    } catch (error) {
+      console.error('Logout error:', error);
+      // Even if logout fails, redirect to login
+      navigate('/login');
+    }
   };
 
   const isActiveRoute = (path) => {

@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { useAuth } from '../../contexts/AuthContext';
 import Icon from '../../components/AppIcon';
 import RegistrationForm from './components/RegistrationForm';
 import SocialRegistration from './components/SocialRegistration';
@@ -7,10 +8,10 @@ import TrustSignals from './components/TrustSignals';
 import SuccessModal from './components/SuccessModal';
 
 const Register = () => {
-  const [isLoading, setIsLoading] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [registeredEmail, setRegisteredEmail] = useState('');
   const navigate = useNavigate();
+  const { register, isLoading, error, isAuthenticated, clearError } = useAuth();
 
   // Mock credentials for testing
   const mockCredentials = {
@@ -20,27 +21,37 @@ const Register = () => {
     nicheMarket: 'vegan-fitness'
   };
 
+  // Redirect if already authenticated
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/dashboard');
+    }
+  }, [isAuthenticated, navigate]);
+
   const handleRegistration = async (formData) => {
-    setIsLoading(true);
+    clearError();
     
     try {
-      // Simulate API call delay
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      const result = await register({
+        email: formData.email,
+        password: formData.password,
+        businessName: formData.businessName,
+        nicheMarket: formData.nicheMarket
+      });
       
-      // Mock registration logic
-      console.log('Registration data:', formData);
-      
-      // Set registered email for success modal
-      setRegisteredEmail(formData.email);
-      
-      // Show success modal
-      setShowSuccessModal(true);
+      if (result.success) {
+        console.log('Registration successful');
+        
+        // Set registered email for success modal
+        setRegisteredEmail(formData.email);
+        
+        // Show success modal
+        setShowSuccessModal(true);
+      }
+      // Error handling is managed by the auth context
       
     } catch (error) {
       console.error('Registration failed:', error);
-      // In a real app, you would show error messages here
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -117,6 +128,28 @@ const Register = () => {
 
           {/* Registration Form Card */}
           <div className="bg-surface rounded-xl shadow-elevation-2 border border-border p-6 mb-8">
+            {/* Error Display */}
+            {error && (
+              <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+                <div className="flex items-center">
+                  <div className="flex-shrink-0">
+                    <Icon name="AlertCircle" size={20} className="text-red-400" />
+                  </div>
+                  <div className="ml-3">
+                    <p className="text-sm text-red-800">{error}</p>
+                  </div>
+                  <div className="ml-auto pl-3">
+                    <button
+                      onClick={clearError}
+                      className="inline-flex text-red-400 hover:text-red-600 focus:outline-none focus:text-red-600"
+                    >
+                      <Icon name="X" size={16} />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+            
             <RegistrationForm 
               onSubmit={handleRegistration}
               isLoading={isLoading}
