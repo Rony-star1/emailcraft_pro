@@ -25,14 +25,14 @@ const Login = () => {
     }
   }, [isAuthenticated, navigate]);
 
-  // useEffect(() => {
-  //   if (error) {
-  //     const timer = setTimeout(() => {
-  //       clearError();
-  //     }, 10000); // Extended to 10 seconds so users can see the error
-  //     return () => clearTimeout(timer);
-  //   }
-  // }, [error, clearError]);
+  useEffect(() => {
+    if (error) {
+      const timer = setTimeout(() => {
+        clearError();
+      }, 10000); // Extended to 10 seconds so users can see the error
+      return () => clearTimeout(timer);
+    }
+  }, [error, clearError]);
 
   const handleChange = (e) => {
     setFormData({
