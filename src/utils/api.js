@@ -48,6 +48,8 @@ export const apiClient = {
     me: (token) => api.get('/auth/me', {
       headers: { Authorization: `Bearer ${token}` }
     }),
+    forgotPassword: (email) => api.post('/auth/forgot-password', { email }),
+    resetPassword: (data) => api.post('/auth/reset-password', data),
   },
 
   // Payment endpoints
