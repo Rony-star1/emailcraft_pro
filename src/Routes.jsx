@@ -6,6 +6,7 @@ import ProtectedRoute from "components/ProtectedRoute";
 // Add your imports here
 import Login from "pages/login";
 import Register from "pages/register";
+import ResetPassword from "pages/reset-password";
 import Dashboard from "pages/dashboard";
 import CampaignAnalytics from "pages/campaign-analytics";
 import ContactManagement from "pages/contact-management";
