@@ -16,9 +16,6 @@ const Login = () => {
   const { login, isLoading, error, clearError, isAuthenticated, forgotPassword } = useAuth();
   const navigate = useNavigate();
 
-  // Debug logging to see what error state looks like
-  console.log('Login component render - error state:', error);
-
   useEffect(() => {
     if (isAuthenticated) {
       navigate('/dashboard');
