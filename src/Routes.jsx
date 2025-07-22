@@ -23,6 +23,7 @@ const Routes = () => {
         {/* Public routes */}
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
         
         {/* Protected routes */}
         <Route path="/" element={
