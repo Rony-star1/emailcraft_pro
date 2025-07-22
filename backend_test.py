@@ -492,6 +492,8 @@ class AuthenticationTester:
             self.test_login_user,
             self.test_token_validation,
             self.test_invalid_credentials_login,
+            self.test_forgot_password,
+            self.test_reset_password_validation,
             self.test_duplicate_email_registration,
             self.test_invalid_token_access,
             self.test_missing_token_access,
