@@ -331,7 +331,118 @@ class AuthenticationTester:
             self.log_test("Missing Token Access", False, f"Invalid JSON response during missing token test: {str(e)}")
             return False
     
-    def test_cors_headers(self):
+    def test_forgot_password(self):
+        """Test forgot password endpoint - should return success message regardless of email existence"""
+        try:
+            # Test with existing email
+            payload = {"email": self.test_user_email}
+            
+            response = requests.post(
+                f"{self.base_url}/auth/forgot-password",
+                json=payload,
+                headers=self.headers,
+                timeout=15
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                expected_message = "If an account with this email exists, you will receive a password reset link shortly."
+                actual_message = data.get("message", "")
+                
+                if expected_message in actual_message:
+                    self.log_test("Forgot Password (Existing Email)", True, f"Correctly returned success message: '{actual_message}'", {
+                        "status_code": response.status_code,
+                        "message": actual_message
+                    })
+                    
+                    # Test with non-existing email - should return same message
+                    payload_nonexistent = {"email": "nonexistent@emailcraft.test"}
+                    response_nonexistent = requests.post(
+                        f"{self.base_url}/auth/forgot-password",
+                        json=payload_nonexistent,
+                        headers=self.headers,
+                        timeout=15
+                    )
+                    
+                    if response_nonexistent.status_code == 200:
+                        data_nonexistent = response_nonexistent.json()
+                        actual_message_nonexistent = data_nonexistent.get("message", "")
+                        
+                        if expected_message in actual_message_nonexistent:
+                            self.log_test("Forgot Password (Non-existing Email)", True, f"Correctly returned same success message for security: '{actual_message_nonexistent}'", {
+                                "status_code": response_nonexistent.status_code,
+                                "message": actual_message_nonexistent
+                            })
+                            return True
+                        else:
+                            self.log_test("Forgot Password (Non-existing Email)", False, f"Wrong message for non-existing email. Expected: '{expected_message}', Got: '{actual_message_nonexistent}'", data_nonexistent)
+                            return False
+                    else:
+                        data_nonexistent = response_nonexistent.json() if response_nonexistent.headers.get('content-type', '').startswith('application/json') else {"error": response_nonexistent.text}
+                        self.log_test("Forgot Password (Non-existing Email)", False, f"Expected 200 but got {response_nonexistent.status_code}", data_nonexistent)
+                        return False
+                else:
+                    self.log_test("Forgot Password (Existing Email)", False, f"Wrong message format. Expected: '{expected_message}', Got: '{actual_message}'", data)
+                    return False
+            else:
+                data = response.json() if response.headers.get('content-type', '').startswith('application/json') else {"error": response.text}
+                self.log_test("Forgot Password (Existing Email)", False, f"Expected 200 but got {response.status_code}", data)
+                return False
+                
+        except requests.exceptions.RequestException as e:
+            self.log_test("Forgot Password", False, f"Network error during forgot password test: {str(e)}")
+            return False
+        except json.JSONDecodeError as e:
+            self.log_test("Forgot Password", False, f"Invalid JSON response during forgot password test: {str(e)}")
+            return False
+    
+    def test_reset_password_validation(self):
+        """Test reset password endpoint validation - should validate required parameters"""
+        try:
+            # Test with missing parameters
+            test_cases = [
+                {"payload": {}, "expected_error": "User ID, secret, and new password are required"},
+                {"payload": {"userId": "test"}, "expected_error": "User ID, secret, and new password are required"},
+                {"payload": {"userId": "test", "secret": "test"}, "expected_error": "User ID, secret, and new password are required"},
+                {"payload": {"userId": "test", "secret": "test", "password": "123"}, "expected_error": "Password must be at least 6 characters long"},
+            ]
+            
+            all_passed = True
+            for i, test_case in enumerate(test_cases):
+                response = requests.post(
+                    f"{self.base_url}/auth/reset-password",
+                    json=test_case["payload"],
+                    headers=self.headers,
+                    timeout=15
+                )
+                
+                if response.status_code == 400:
+                    data = response.json()
+                    actual_error = data.get("error", "")
+                    expected_error = test_case["expected_error"]
+                    
+                    if expected_error in actual_error:
+                        self.log_test(f"Reset Password Validation {i+1}", True, f"Correctly validated parameters: '{actual_error}'", {
+                            "status_code": response.status_code,
+                            "error_message": actual_error,
+                            "test_payload": test_case["payload"]
+                        })
+                    else:
+                        self.log_test(f"Reset Password Validation {i+1}", False, f"Wrong validation message. Expected: '{expected_error}', Got: '{actual_error}'", data)
+                        all_passed = False
+                else:
+                    data = response.json() if response.headers.get('content-type', '').startswith('application/json') else {"error": response.text}
+                    self.log_test(f"Reset Password Validation {i+1}", False, f"Expected 400 but got {response.status_code}", data)
+                    all_passed = False
+            
+            return all_passed
+                
+        except requests.exceptions.RequestException as e:
+            self.log_test("Reset Password Validation", False, f"Network error during reset password validation test: {str(e)}")
+            return False
+        except json.JSONDecodeError as e:
+            self.log_test("Reset Password Validation", False, f"Invalid JSON response during reset password validation test: {str(e)}")
+            return False
         """Test CORS configuration"""
         try:
             response = requests.options(
