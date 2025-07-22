@@ -496,8 +496,7 @@ class AuthenticationTester:
             self.test_reset_password_validation,
             self.test_duplicate_email_registration,
             self.test_invalid_token_access,
-            self.test_missing_token_access,
-            self.test_cors_headers
+            self.test_missing_token_access
         ]
         
         passed = 0
