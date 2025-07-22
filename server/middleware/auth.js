@@ -131,4 +131,65 @@ router.post('/logout', authenticateToken, async (req, res) => {
   }
 });
 
+// Forgot Password
+router.post('/forgot-password', async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    if (!email) {
+      return res.status(400).json({ error: 'Email is required' });
+    }
+
+    // Check if user exists first
+    try {
+      // In Appwrite, we need to create a password recovery session
+      await account.createRecovery(
+        email,
+        `${process.env.FRONTEND_URL}/reset-password` // The URL where users will be redirected to reset their password
+      );
+
+      res.json({ 
+        message: 'If an account with this email exists, you will receive a password reset link shortly.' 
+      });
+    } catch (error) {
+      console.error('Forgot password error:', error);
+      // Don't reveal if user exists or not for security
+      res.json({ 
+        message: 'If an account with this email exists, you will receive a password reset link shortly.' 
+      });
+    }
+  } catch (error) {
+    console.error('Forgot password error:', error);
+    res.status(500).json({ error: 'Failed to process password reset request' });
+  }
+});
+
+// Reset Password (for when user clicks the link from email)
+router.post('/reset-password', async (req, res) => {
+  try {
+    const { userId, secret, password } = req.body;
+
+    if (!userId || !secret || !password) {
+      return res.status(400).json({ error: 'User ID, secret, and new password are required' });
+    }
+
+    if (password.length < 6) {
+      return res.status(400).json({ error: 'Password must be at least 6 characters long' });
+    }
+
+    // Complete the password recovery using Appwrite
+    await account.updateRecovery(userId, secret, password);
+
+    res.json({ message: 'Password reset successfully' });
+  } catch (error) {
+    console.error('Reset password error:', error);
+    
+    if (error.code === 401) {
+      return res.status(401).json({ error: 'Invalid or expired reset token' });
+    }
+    
+    res.status(500).json({ error: 'Failed to reset password' });
+  }
+});
+
 export { router as authRoutes };
