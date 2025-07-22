@@ -99,7 +99,17 @@ export const AuthProvider = ({ children }) => {
       });
       return response;
     } catch (error) {
-      const errorMessage = error.response?.data?.error || 'Login failed';
+      console.error('Login error details:', error);
+      let errorMessage = 'Login failed';
+      
+      if (error.response?.data?.error) {
+        errorMessage = error.response.data.error;
+      } else if (error.response?.data?.message) {
+        errorMessage = error.response.data.message;
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      
       dispatch({ type: 'LOGIN_ERROR', payload: errorMessage });
       throw new Error(errorMessage);
     }
