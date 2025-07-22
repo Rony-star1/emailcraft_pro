@@ -195,10 +195,10 @@ class AuthenticationTester:
             return False
     
     def test_invalid_credentials_login(self):
-        """Test login with invalid credentials"""
+        """Test login with invalid credentials - should return 401 with 'Invalid email or password'"""
         try:
             payload = {
-                "email": self.test_user_email,
+                "email": "nonexistent@emailcraft.test",
                 "password": "WrongPassword123!"
             }
             
@@ -211,11 +211,18 @@ class AuthenticationTester:
             
             if response.status_code == 401:
                 data = response.json() if response.headers.get('content-type', '').startswith('application/json') else {"error": response.text}
-                self.log_test("Invalid Credentials Login", True, "Correctly rejected invalid credentials", {
-                    "status_code": response.status_code,
-                    "error_message": data.get("error", "No error message")
-                })
-                return True
+                expected_error = "Invalid email or password"
+                actual_error = data.get("error", "")
+                
+                if expected_error in actual_error:
+                    self.log_test("Invalid Credentials Login", True, f"Correctly rejected invalid credentials with proper error message: '{actual_error}'", {
+                        "status_code": response.status_code,
+                        "error_message": actual_error
+                    })
+                    return True
+                else:
+                    self.log_test("Invalid Credentials Login", False, f"Got 401 but wrong error message. Expected: '{expected_error}', Got: '{actual_error}'", data)
+                    return False
             else:
                 data = response.json() if response.headers.get('content-type', '').startswith('application/json') else {"error": response.text}
                 self.log_test("Invalid Credentials Login", False, f"Expected 401 but got {response.status_code}", data)
