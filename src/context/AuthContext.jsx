@@ -151,12 +151,54 @@ export const AuthProvider = ({ children }) => {
     dispatch({ type: 'CLEAR_ERROR' });
   };
 
+  const forgotPassword = async (email) => {
+    try {
+      const response = await apiClient.auth.forgotPassword(email);
+      return response;
+    } catch (error) {
+      console.error('Forgot password error details:', error);
+      let errorMessage = 'Failed to send reset email';
+      
+      if (error.response?.data?.error) {
+        errorMessage = error.response.data.error;
+      } else if (error.response?.data?.message) {
+        errorMessage = error.response.data.message;
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      
+      throw new Error(errorMessage);
+    }
+  };
+
+  const resetPassword = async (userId, secret, password) => {
+    try {
+      const response = await apiClient.auth.resetPassword({ userId, secret, password });
+      return response;
+    } catch (error) {
+      console.error('Reset password error details:', error);
+      let errorMessage = 'Failed to reset password';
+      
+      if (error.response?.data?.error) {
+        errorMessage = error.response.data.error;
+      } else if (error.response?.data?.message) {
+        errorMessage = error.response.data.message;
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      
+      throw new Error(errorMessage);
+    }
+  };
+
   const value = {
     ...state,
     login,
     register,
     logout,
     clearError,
+    forgotPassword,
+    resetPassword,
   };
 
   return (
