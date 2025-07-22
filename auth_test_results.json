@@ -1,19 +1,19 @@
 {
-  "total_tests": 9,
-  "passed": 9,
+  "total_tests": 14,
+  "passed": 14,
   "failed": 0,
   "success_rate": "100.0%",
-  "test_user_email": "testuser_e51cc2b8@emailcraft.test",
-  "timestamp": "2025-07-21T17:09:49.853428",
+  "test_user_email": "testuser_96ef635c@emailcraft.test",
+  "timestamp": "2025-07-22T16:52:14.537944",
   "results": [
     {
       "test": "Health Check",
       "success": true,
       "message": "Server is running - Status: OK",
-      "timestamp": "2025-07-21T17:09:41.634426",
+      "timestamp": "2025-07-22T16:52:08.690401",
       "response_data": {
         "status": "OK",
-        "timestamp": "2025-07-21T17:09:41.626Z",
+        "timestamp": "2025-07-22T16:52:08.689Z",
         "environment": "development"
       }
     },
@@ -21,10 +21,10 @@
       "test": "User Registration",
       "success": true,
       "message": "User registered successfully with JWT token",
-      "timestamp": "2025-07-21T17:09:44.266931",
+      "timestamp": "2025-07-22T16:52:09.055264",
       "response_data": {
-        "user_id": "687e7455002c3e6411e9",
-        "email": "testuser_e51cc2b8@emailcraft.test",
+        "user_id": "687fc1b8002b5d501084",
+        "email": "testuser_96ef635c@emailcraft.test",
         "name": "Test User",
         "has_token": true
       }
@@ -33,10 +33,10 @@
       "test": "User Login",
       "success": true,
       "message": "Login successful with JWT token",
-      "timestamp": "2025-07-21T17:09:45.768054",
+      "timestamp": "2025-07-22T16:52:09.870734",
       "response_data": {
-        "user_id": "687e7455002c3e6411e9",
-        "email": "testuser_e51cc2b8@emailcraft.test",
+        "user_id": "687fc1b8002b5d501084",
+        "email": "testuser_96ef635c@emailcraft.test",
         "name": "Test User",
         "has_token": true
       }
@@ -45,28 +45,101 @@
       "test": "Token Validation",
       "success": true,
       "message": "JWT token validated successfully",
-      "timestamp": "2025-07-21T17:09:46.347265",
+      "timestamp": "2025-07-22T16:52:10.456738",
       "response_data": {
-        "user_id": "687e7455002c3e6411e9",
-        "email": "testuser_e51cc2b8@emailcraft.test",
+        "user_id": "687fc1b8002b5d501084",
+        "email": "testuser_96ef635c@emailcraft.test",
         "name": "Test User"
       }
     },
     {
       "test": "Invalid Credentials Login",
       "success": true,
-      "message": "Correctly rejected invalid credentials",
-      "timestamp": "2025-07-21T17:09:47.108742",
+      "message": "Correctly rejected invalid credentials with proper error message: 'Invalid email or password'",
+      "timestamp": "2025-07-22T16:52:11.049916",
       "response_data": {
         "status_code": 401,
         "error_message": "Invalid email or password"
       }
     },
     {
+      "test": "Forgot Password (Existing Email)",
+      "success": true,
+      "message": "Correctly returned success message: 'If an account with this email exists, you will receive a password reset link shortly.'",
+      "timestamp": "2025-07-22T16:52:11.659160",
+      "response_data": {
+        "status_code": 200,
+        "message": "If an account with this email exists, you will receive a password reset link shortly."
+      }
+    },
+    {
+      "test": "Forgot Password (Non-existing Email)",
+      "success": true,
+      "message": "Correctly returned same success message for security: 'If an account with this email exists, you will receive a password reset link shortly.'",
+      "timestamp": "2025-07-22T16:52:11.741809",
+      "response_data": {
+        "status_code": 200,
+        "message": "If an account with this email exists, you will receive a password reset link shortly."
+      }
+    },
+    {
+      "test": "Reset Password Validation 1",
+      "success": true,
+      "message": "Correctly validated parameters: 'User ID, secret, and new password are required'",
+      "timestamp": "2025-07-22T16:52:12.246316",
+      "response_data": {
+        "status_code": 400,
+        "error_message": "User ID, secret, and new password are required",
+        "test_payload": {}
+      }
+    },
+    {
+      "test": "Reset Password Validation 2",
+      "success": true,
+      "message": "Correctly validated parameters: 'User ID, secret, and new password are required'",
+      "timestamp": "2025-07-22T16:52:12.249858",
+      "response_data": {
+        "status_code": 400,
+        "error_message": "User ID, secret, and new password are required",
+        "test_payload": {
+          "userId": "test"
+        }
+      }
+    },
+    {
+      "test": "Reset Password Validation 3",
+      "success": true,
+      "message": "Correctly validated parameters: 'User ID, secret, and new password are required'",
+      "timestamp": "2025-07-22T16:52:12.253071",
+      "response_data": {
+        "status_code": 400,
+        "error_message": "User ID, secret, and new password are required",
+        "test_payload": {
+          "userId": "test",
+          "secret": "test"
+        }
+      }
+    },
+    {
+      "test": "Reset Password Validation 4",
+      "success": true,
+      "message": "Correctly validated parameters: 'Password must be at least 6 characters long'",
+      "timestamp": "2025-07-22T16:52:12.255948",
+      "response_data": {
+        "status_code": 400,
+        "error_message": "Password must be at least 6 characters long",
+        "test_payload": {
+          "userId": "test",
+          "secret": "test",
+          "password": "123"
+        }
+      }
+    },
+    {
       "test": "Duplicate Email Registration",
       "success": true,
       "message": "Correctly rejected duplicate email",
-      "timestamp": "2025-07-21T17:09:47.840910",
+      "timestamp": "2025-07-22T16:52:13.029981",
       "response_data": {
         "status_code": 409,
         "error_message": "User with this email already exists"
@@ -76,7 +149,7 @@
       "test": "Invalid Token Access",
       "success": true,
       "message": "Correctly rejected invalid token",
-      "timestamp": "2025-07-21T17:09:48.345260",
+      "timestamp": "2025-07-22T16:52:13.534130",
       "response_data": {
         "status_code": 403,
         "error_message": "Invalid token"
@@ -86,22 +159,10 @@
       "test": "Missing Token Access",
       "success": true,
       "message": "Correctly rejected missing token",
-      "timestamp": "2025-07-21T17:09:48.849098",
+      "timestamp": "2025-07-22T16:52:14.037686",
       "response_data": {
         "status_code": 401,
         "error_message": "Access token required"
-      }
-    },
-    {
-      "test": "CORS Configuration",
-      "success": true,
-      "message": "CORS headers properly configured",
-      "timestamp": "2025-07-21T17:09:49.353115",
-      "response_data": {
-        "access-control-allow-origin": "http://localhost:3000",
-        "access-control-allow-methods": "GET,HEAD,PUT,PATCH,POST,DELETE",
-        "access-control-allow-headers": "Content-Type",
-        "access-control-allow-credentials": "true"
       }
     }
   ]
