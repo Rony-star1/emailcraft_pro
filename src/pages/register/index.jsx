@@ -23,7 +23,7 @@ const Register = () => {
     if (error) {
       const timer = setTimeout(() => {
         clearError();
-      }, 5000);
+      }, 10000); // Extended to 10 seconds so users can see the error
       return () => clearTimeout(timer);
     }
   }, [error, clearError]);
