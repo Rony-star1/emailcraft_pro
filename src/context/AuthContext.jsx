@@ -126,7 +126,17 @@ export const AuthProvider = ({ children }) => {
       });
       return response;
     } catch (error) {
-      const errorMessage = error.response?.data?.error || 'Registration failed';
+      console.error('Registration error details:', error);
+      let errorMessage = 'Registration failed';
+      
+      if (error.response?.data?.error) {
+        errorMessage = error.response.data.error;
+      } else if (error.response?.data?.message) {
+        errorMessage = error.response.data.message;
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      
       dispatch({ type: 'REGISTER_ERROR', payload: errorMessage });
       throw new Error(errorMessage);
     }
