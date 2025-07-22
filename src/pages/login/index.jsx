@@ -40,13 +40,10 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Form submitted, attempting login...');
     try {
       const response = await login(formData.email, formData.password);
-      console.log('Login successful:', response);
       navigate('/dashboard');
     } catch (err) {
-      console.log('Login failed:', err.message);
       // Error is handled by context
     }
   };
