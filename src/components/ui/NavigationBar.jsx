@@ -36,6 +36,12 @@ const NavigationBar = () => {
       icon: 'BarChart3', 
       tooltip: 'View campaign performance and insights' 
     },
+    {
+      label: 'Pricing',
+      path: '/pricing',
+      icon: 'DollarSign',
+      tooltip: 'View our pricing plans'
+    },
   ];
 
   const currentUser = {

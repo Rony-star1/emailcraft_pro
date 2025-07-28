@@ -9,47 +9,18 @@ const dodoClient = new DodoPaymentsClient();
 
 // Get pricing plans
 router.get('/plans', (req, res) => {
-  const plans = [
-    {
-      id: 'starter',
-      name: 'Starter',
-      monthlyPrice: 25,
-      yearlyPrice: 19,
-      contacts: 1000,
-      emails: 5000,
-      features: ['Basic email editor', 'Contact management', 'Basic analytics', 'Email support']
-    },
-    {
-      id: 'professional',
-      name: 'Professional',
-      monthlyPrice: 59,
-      yearlyPrice: 49,
-      contacts: 5000,
-      emails: 25000,
-      features: ['Advanced email editor', 'AI subject lines', 'Advanced analytics', 'A/B testing', 'Priority support']
-    },
-    {
-      id: 'enterprise',
-      name: 'Enterprise',
-      monthlyPrice: 129,
-      yearlyPrice: 99,
-      contacts: 25000,
-      emails: 100000,
-      features: ['All Professional features', 'Custom integrations', 'Dedicated support', 'White-label options']
-    }
-  ];
-
+  const plans = getPlans();
   res.json({ plans });
 });
 
 // Create payment intent
 router.post('/create-intent', authenticateToken, validatePaymentRequest, async (req, res) => {
   try {
-    const { planId, billingCycle, currency = 'USD' } = req.body;
+    const { planId, billingCycle } = req.body;
     const userId = req.user.id;
 
     // Get plan details
-    const plans = await getPlans();
+    const plans = getPlans();
     const plan = plans.find(p => p.id === planId);
     
     if (!plan) {
@@ -57,6 +28,7 @@ router.post('/create-intent', authenticateToken, validatePaymentRequest, async (
     }
 
     const amount = billingCycle === 'yearly' ? plan.yearlyPrice : plan.monthlyPrice;
+    const currency = 'USD';
 
     // Create payment intent with Dodo
     const paymentIntent = await dodoClient.createPaymentIntent({
@@ -256,36 +228,38 @@ router.get('/history', authenticateToken, async (req, res) => {
   }
 });
 
-async function getPlans() {
-  return [
-    {
-      id: 'starter',
-      name: 'Starter',
-      monthlyPrice: 25,
-      yearlyPrice: 19,
-      contacts: 1000,
-      emails: 5000,
-      features: ['Basic email editor', 'Contact management', 'Basic analytics', 'Email support']
-    },
-    {
-      id: 'professional',
-      name: 'Professional',
-      monthlyPrice: 59,
-      yearlyPrice: 49,
-      contacts: 5000,
-      emails: 25000,
-      features: ['Advanced email editor', 'AI subject lines', 'Advanced analytics', 'A/B testing', 'Priority support']
-    },
-    {
-      id: 'enterprise',
-      name: 'Enterprise',
-      monthlyPrice: 129,
-      yearlyPrice: 99,
-      contacts: 25000,
-      emails: 100000,
-      features: ['All Professional features', 'Custom integrations', 'Dedicated support', 'White-label options']
-    }
-  ];
+const plans = [
+  {
+    id: 'starter',
+    name: 'Starter',
+    monthlyPrice: 25,
+    yearlyPrice: 19,
+    contacts: 1000,
+    emails: 5000,
+    features: ['Basic email editor', 'Contact management', 'Basic analytics', 'Email support']
+  },
+  {
+    id: 'professional',
+    name: 'Professional',
+    monthlyPrice: 59,
+    yearlyPrice: 49,
+    contacts: 5000,
+    emails: 25000,
+    features: ['Advanced email editor', 'AI subject lines', 'Advanced analytics', 'A/B testing', 'Priority support']
+  },
+  {
+    id: 'enterprise',
+    name: 'Enterprise',
+    monthlyPrice: 129,
+    yearlyPrice: 99,
+    contacts: 25000,
+    emails: 100000,
+    features: ['All Professional features', 'Custom integrations', 'Dedicated support', 'White-label options']
+  }
+];
+
+function getPlans() {
+  return plans;
 }
 
 export default router;
